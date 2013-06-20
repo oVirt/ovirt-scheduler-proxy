@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<hosts>
+    <host href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450" id="dae2bb4c-a94e-4142-9206-895eff333450">
+        <actions>
+            <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/approve" rel="approve"/>
+            <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/iscsilogin" rel="iscsilogin"/>
+            <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/iscsidiscover" rel="iscsidiscover"/>
+            <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/commitnetconfig" rel="commitnetconfig"/>
+            <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/deactivate" rel="deactivate"/>
+            <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/fence" rel="fence"/>
+            <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/install" rel="install"/>
+            <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/activate" rel="activate"/>
+        </actions>
+        <name>dev-164</name>
+        <comment>lo van a kertemben - mam konyin v zahrade</comment>
+        <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/storage" rel="storage"/>
+        <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/nics" rel="nics"/>
+        <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/tags" rel="tags"/>
+        <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/permissions" rel="permissions"/>
+        <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/statistics" rel="statistics"/>
+        <link href="/api/hosts/dae2bb4c-a94e-4142-9206-895eff333450/hooks" rel="hooks"/>
+        <address>dev-164</address>
+        <certificate>
+            <organization>oVirt</organization>
+            <subject>O=oVirt,CN=dev-164</subject>
+        </certificate>
+        <status>
+            <state>up</state>
+        </status>
+        <cluster href="/api/clusters/99408929-82cf-4dc7-a532-9d998063fa95" id="99408929-82cf-4dc7-a532-9d998063fa95"/>
+        <port>54321</port>
+        <type>rhel</type>
+        <storage_manager priority="5">true</storage_manager>
+        <version major="4" minor="10" build="3" revision="0" full_version="vdsm-4.10.3-0.201.gitdd7d927.el6"/>
+        <hardware_information>
+            <manufacturer>Dell Inc.</manufacturer>
+            <version>Not Specified</version>
+            <serial_number>5FFJ35J</serial_number>
+            <product_name>PowerEdge R210</product_name>
+            <uuid>4C4C4544-0046-4610-804A-B5C04F33354A</uuid>
+            <family>Not Specified</family>
+        </hardware_information>
+        <power_management type="apc">
+            <enabled>false</enabled>
+            <options/>
+        </power_management>
+        <ksm>
+            <enabled>false</enabled>
+        </ksm>
+        <transparent_hugepages>
+            <enabled>true</enabled>
+        </transparent_hugepages>
+        <iscsi>
+            <initiator>iqn.1994-05.com.redhat:b0f9f6ac3bc</initiator>
+        </iscsi>
+        <cpu>
+            <topology sockets="1" cores="4" threads="2"/>
+            <name>Intel(R) Xeon(R) CPU           X3470  @ 2.93GHz</name>
+            <speed>2926</speed>
+        </cpu>
+        <memory>8241807360</memory>
+        <max_scheduling_memory>7837057024</max_scheduling_memory>
+        <summary>
+            <active>0</active>
+            <migrating>0</migrating>
+            <total>0</total>
+        </summary>
+        <os type="RHEL">
+            <version full_version="6Server - 6.3.0.3.el6"/>
+        </os>
+        <libvirt_version major="0" minor="9" build="10" revision="0" full_version="libvirt-0.9.10-21.el6_3.8"/>
+    </host>
+</hosts>

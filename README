@@ -1,0 +1,8 @@
+oVirt Scheduler Proxy
+=====================
+
+oVirt Scheduler Proxy runs user defined scripts to filter and fine-tune
+load-balancing of their oVirt system. The program opens an http port with
+simple XML-RPC
+
+see http://www.ovirt.org/Features/oVirt_External_Scheduling_Proxy
