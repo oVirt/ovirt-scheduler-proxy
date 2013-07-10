@@ -20,14 +20,17 @@
 
 import unittest
 
-from executor import PluginExecutor
+from request_handler import RequestHandler
 import os
 
 
 class ExecutorTest(unittest.TestCase):
 
     def test_discover(self):
-        executor = PluginExecutor(os.path.join(os.getcwd(), 'plugins'))
+        executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
+                                  os.path.join(os.getcwd(), 'src'))
         ret = executor.discover()
-        assert ret == ['dummy.py']
+        assert ret == {'balance': ['dummy'],
+                       'filters': ['dummy'],
+                       'scores': ['dummy']}
         pass

@@ -18,21 +18,10 @@
 # Refer to the README and COPYING files for full details of the license
 #
 
-import SocketServer
-import SimpleXMLRPCServer
-import os
-from executor import PluginExecutor
 
-
-class SimpleThreadedXMLRPCServer(SocketServer.ThreadingMixIn,
-                                 SimpleXMLRPCServer.SimpleXMLRPCServer):
-    pass
-
-
-class HandlerClass(object):
+class API(object):
     '''
-    This class does not follow python naming conventions in it method names
-    because these method names refer to RPC method names.
+    This class holds the proxy's exposed API to be used by oVirt engine.
     See http://www.ovirt.org/Features/oVirt_External_Scheduling_Proxy
     '''
     _plugin_executor = None
@@ -43,21 +32,22 @@ class HandlerClass(object):
     def discover(self):
         return self._plugin_executor.discover()
 
-    def runFilters(self):
-        return self._plugin_executor.discover()
+    def runFilters(self, filters, hosts, vm, properties_map):
+        return self._plugin_executor.run_filters(
+            filters,
+            hosts,
+            vm,
+            properties_map)
 
-    def runCostFunctions(self):
-        return self._plugin_executor.run_cost_functions()
+    def runCostFunctions(self, cost_functions, hosts, vm, properties_map):
+        return self._plugin_executor.run_cost_functions(
+            cost_functions,
+            hosts,
+            vm,
+            properties_map)
 
-    def runLoadBalancing(self):
-        return self._plugin_executor.run_loadbalancing()
-
-if __name__ == "__main__":
-    server = SimpleThreadedXMLRPCServer(("localhost", 18781), allow_none=True)
-
-    executor = PluginExecutor(os.path.join(os.getcwd(), "plugins"))
-
-    server.register_introspection_functions()
-    server.register_instance(HandlerClass(executor))
-
-    server.serve_forever()
+    def runLoadBalancing(self, balance, hosts, properties_map):
+        return self._plugin_executor.run_load_balancing(
+            balance,
+            hosts,
+            properties_map)

@@ -1,4 +1,3 @@
-#!/bin/env python
 #
 # Copyright 2013 Red Hat, Inc.
 #
@@ -19,17 +18,24 @@
 # Refer to the README and COPYING files for full details of the license
 #
 
-'''
-This dummy sample is the most simple filter, it will return all ID's of all the VM's passed over
-'''
+import unittest
 
-#do not remove this import, the ovirtsdk is not going to work without it
-import ovirtsdk.infrastructure.brokers
-from ovirtsdk.xml import params
-from sys import stdin
+from runner import PythonMethodRunner
+import os
 
-if __name__ == "__main__":
-    hosts = params.parseString(stdin.read())
 
-    for host in hosts.host:
-        print host.id
+class RunnerTest(unittest.TestCase):
+    def test_with_dummy(self):
+        scriptpath = os.path.join(os.getcwd(),
+                                  'plugins')
+        runner = PythonMethodRunner(scriptpath,
+                                    'dummy',
+                                    'filterFunction',
+                                    ['<hosts><host></host></hosts>',
+                                     '<vm></vm>',
+                                     ''])
+        runner.start()
+        runner.join()
+        result = runner.getResults()
+        assert result is not None
+        pass
