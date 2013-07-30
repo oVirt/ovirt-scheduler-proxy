@@ -85,11 +85,10 @@ stop:
 	pkill -f "python src/ovirtscheduler/oschedproxyd.py"
 
 clean:
-	find -name "*.pyc" -exec rm {} \;
+	find -name '*.pyc' -exec rm {} \;
 
 restart:
 	$(MAKE) stop
 	$(MAKE) start
 
 .PHONY: checkclean commit version bumpver release all test pythontest javatest start stop pep8 clean restart rpm srpm tag tarball
-
