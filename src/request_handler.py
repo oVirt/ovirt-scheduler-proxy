@@ -85,7 +85,7 @@ class RequestHandler(object):
             "scores": list(self._scores),
             "balance": list(self._balancers)}
 
-    def run_filters(self, filters, hostsXml, vmXml, properties_map):
+    def run_filters(self, filters, hostIDs, vmID, properties_map):
         #Intersects the results from the filters
         def aggregateResults(filterRunners):
             resultSet = None
@@ -108,7 +108,7 @@ class RequestHandler(object):
                 self._pluginDir,
                 f,
                 self._utils.FILTER,
-                (hostsXml, vmXml, properties_map))
+                (hostIDs, vmID, properties_map))
             filterRunners.append(runner)
 
         for runner in filterRunners:
@@ -121,8 +121,8 @@ class RequestHandler(object):
 
     def run_cost_functions(self,
                            cost_functions,
-                           hostsXml,
-                           vmXml,
+                           hostIDs,
+                           vmID,
                            properties_map):
         #accumalate the results
         def aggregateResults(scoreRunners):
@@ -150,7 +150,7 @@ class RequestHandler(object):
                 self._pluginDir,
                 name,
                 self._utils.SCORE,
-                (hostsXml, vmXml, properties_map))
+                (hostIDs, vmID, properties_map))
             scoreRunners.append(runner)
             weights.append(weight)
 
@@ -161,7 +161,7 @@ class RequestHandler(object):
 
         return aggregateResults(zip(scoreRunners, weights))
 
-    def run_load_balancing(self, balance, hostsXml, properties_map):
+    def run_load_balancing(self, balance, hostIDs, properties_map):
         if balance not in self._balancers:
             #log?
             return
@@ -169,7 +169,7 @@ class RequestHandler(object):
         runner = PythonMethodRunner(self._pluginDir,
                                     balance,
                                     self._utils.BALANCE,
-                                    (hostsXml, properties_map))
+                                    (hostIDs, properties_map))
 
         runner.start()
         runner.join(30)

@@ -31,11 +31,12 @@ class RunnerTest(unittest.TestCase):
         runner = PythonMethodRunner(scriptpath,
                                     'dummy',
                                     'filterFunction',
-                                    ['<hosts><host></host></hosts>',
-                                     '<vm></vm>',
+                                    [['11111111-1111-1111-1111-111111111111',
+                                      '22222222-2222-2222-2222-222222222222'],
+                                     '33333333-3333-3333-3333-333333333333',
                                      ''])
         runner.start()
-        runner.join()
+        runner.join(5)
         result = runner.getResults()
         assert result is not None
         pass

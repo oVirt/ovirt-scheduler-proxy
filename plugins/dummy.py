@@ -27,6 +27,7 @@ This dummy sample is the most simple filter, it will return all ID's of all the 
 from ovirtsdk.xml import params
 import ovirtsdk.infrastructure.brokers
 
+
 class SampleFilter():
 
     def __init__(self):
@@ -34,14 +35,15 @@ class SampleFilter():
 
     def filter(self, hosts, vm, args):
 
-        my_hosts = params.parseString(hosts)
+        #use hosts IDs and VM ID to call the Rest API and make a decision
 
-        acceptedHostsIDs =[]
-        for host in my_hosts.host:
+        acceptedHostsIDs = []
+        for hostID in hosts:
             #Do work
-            acceptedHostsIDs.append(host.id)
+            acceptedHostsIDs.append(hostID)
 
         return acceptedHostsIDs
+
 
 # Notice: plugin filters are going to run in process that will be created and destroyed
 #  per request, you cannot save state in memory
@@ -59,19 +61,29 @@ class SampleScore():
 
     def score(self, hosts, vm, args):
 
-        my_hosts = params.parseString(hosts)
-
-        hostScores =[]
-        for host in my_hosts.host:
+        hostScores = []
+        #use hosts IDs and VM ID to call the Rest API and make a decision
+        for hostID in hosts:
             #Do work
-            hostScores.append((host.id,50))
+            hostScores.append((hostID, 50))
 
         return hostScores
+
 
 def scoreFunction(hosts, vm, args):
     scoreClassInstance = SampleScore()
     print scoreClassInstance.score(hosts, vm, args)
 
 
+class SampleBalance():
+    def __init__(self):
+        pass
+
+    def balance(self, hosts, args):
+        #use hosts IDs to call the Rest API and make a decision
+        return ['33333333-3333-3333-3333-333333333333']
+
+
 def balanceFunction(hosts, args):
-    print ['guid']
+    balanceInstance = SampleBalance()
+    print balanceInstance.balance(hosts, args)

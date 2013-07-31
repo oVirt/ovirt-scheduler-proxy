@@ -68,8 +68,8 @@ class ProxyServer():
         # TODO make by config
         logging.info("Loading modules")
         self._handler = RequestHandler(
-            os.path.join(os.getcwd() + '/../', "plugins"),
-            os.getcwd())
+            os.path.join(os.getcwd(), "plugins"),
+            os.path.join(os.getcwd(), "src"))
 
     def run(self):
         logging.info("Loading modules")
