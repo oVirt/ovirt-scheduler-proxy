@@ -33,13 +33,9 @@ rpm: tarball
 
 all: test pep8
 
-PYTHONPATH=src
-
 test:
-	PYTHONPATH=$(PYTHONPATH) nosetests -v
-	make start
-	cd tests/java && mvn clean install
-	make stop
+	PYTHONPATH=src:$(PYTHONPATH) nosetests -v
+	make start;  mvn -f tests/java/pom.xml clean install; make stop
 
 pep8:
 	pep8 src
