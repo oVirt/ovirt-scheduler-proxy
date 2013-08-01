@@ -17,7 +17,6 @@ public class SchedulerProxyTest {
 	static String HOST_ID2 = "22222222-2222-2222-2222-222222222222";
 	static String[] HOST_ARRAY = new String[] { HOST_ID1, HOST_ID2 };
 	static String VM_ID  = "33333333-3333-3333-3333-333333333333";
-	static String BALANCE_RESULT = "33333333-3333-3333-3333-333333333333";
 	static String FILTER_DESCRIPTION = "This is a simple filter that returns all given host ID";
 	static String SCORE_DESCRIPTION = "This is a simple score function that returns all given host ID with score 50";
 	static String BALANCE_DESCRIPTION = "This is a fake balance function that returns always return the guid 33333333-3333-3333-3333-333333333333";
@@ -62,7 +61,8 @@ public class SchedulerProxyTest {
 	
 	@Test
 	public void testBalance() throws XmlRpcException {
-		String result = proxy.balance(FILE_NAME, HOST_ARRAY, "");
-		assertTrue(result.equals(BALANCE_RESULT));
+		HashMap<String, List<String>> result = proxy.balance(FILE_NAME, HOST_ARRAY, "");
+		assertTrue(result.containsKey(VM_ID));
+		assertTrue(result.get(VM_ID).contains(HOST_ID1));
 	}
 }

@@ -119,7 +119,7 @@ public class SchedulerProxy {
 		return retValue;
 	}
 	
-	public String balance(String balanceName, String[] HostID, String args) throws XmlRpcException {
+	public HashMap<String, List<String>> balance(String balanceName, String[] HostID, String args) throws XmlRpcException {
 		Object[] sentObject = new Object[3];
 		//balance name
 		sentObject[0] = balanceName;
@@ -132,15 +132,17 @@ public class SchedulerProxy {
 		return parseBalanceResults(execute);
 	}
 	
-	private String parseBalanceResults(Object result){
+	private HashMap<String, List<String>> parseBalanceResults(Object result){
 		if (result == null ||  ! (result instanceof Object[])){
 			System.out.println("balance error");
 		}
 		Object[] castedResult = (Object[]) result;
-		if (castedResult.length != 1){
-			//is it an error to get more then one vm to balance?
-			System.out.println("got more then one vm to balance");
+		HashMap<String, List<String>> retValue = new HashMap<String, List<String>>();
+		List<String> hostIDs = new LinkedList<String>();
+		for (Object hostID : (Object[])castedResult[1]) {
+			hostIDs.add(hostID.toString());
 		}
-		return castedResult[0].toString();
+		retValue.put(castedResult[0].toString(), hostIDs);
+		return retValue;
 	}
 }

@@ -105,7 +105,8 @@ class SampleBalance():
 
     def balance(self, hosts, args):
         #use hosts IDs to call the Rest API and make a decision
-        return ['33333333-3333-3333-3333-333333333333']
+        #return the wanted vm and a list of underutilised hosts
+        return '33333333-3333-3333-3333-333333333333', ['11111111-1111-1111-1111-111111111111']
 
 
 def balanceFunction(hosts, args):
