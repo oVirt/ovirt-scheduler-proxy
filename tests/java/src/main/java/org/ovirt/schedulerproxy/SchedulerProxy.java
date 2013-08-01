@@ -20,25 +20,30 @@ public class SchedulerProxy {
 		client.setConfig(config);
 	}
 
-	public HashMap<String, List<String>> discover() throws XmlRpcException {
+	public HashMap<String, HashMap<String, String[]>> discover() throws XmlRpcException {
 		Object execute = client.execute("discover", new Object[] {});
 		return parseDiscover(execute);
 	}
 	
-	private HashMap<String, List<String>> parseDiscover(Object result){
+	private HashMap<String, HashMap<String, String[]>> parseDiscover(Object result){
 		if (result == null || ! (result instanceof HashMap)){
 			System.out.println("discover error");
 			return null;
 		}
-		HashMap<String, Object[]> castedResult = (HashMap<String, Object[]>)result;
+		HashMap<String, HashMap<String, Object[]>> castedResult = (HashMap<String, HashMap<String, Object[]>>)result;
 		//Its a list of host IDs
-		HashMap<String, List<String>> retValue = new HashMap<String, List<String>>();
-		for (String key : castedResult.keySet()) {
-			List<String> values = new LinkedList<String>();
-			for (Object o : castedResult.get(key)) {
-				values.add((String)o);
+		HashMap<String, HashMap<String, String[]>> retValue = new HashMap<String, HashMap<String, String[]>>();
+		for (String keyType : castedResult.keySet()) {
+			HashMap<String, Object[]> typeMap = castedResult.get(keyType);
+			HashMap<String, String[]> newTypeMap = new HashMap<String, String[]>();
+			for (String keyModuleName : typeMap.keySet()) {
+				String[] keys = new String[2];
+				for (int i = 0; i < 2; i++) {
+					keys[i] = (String)typeMap.get(keyModuleName)[i];
+				}
+				newTypeMap.put(keyModuleName, keys);
 			}
-			retValue.put(key, values);
+			retValue.put(keyType, newTypeMap);
 		}
 		return retValue;
 	}

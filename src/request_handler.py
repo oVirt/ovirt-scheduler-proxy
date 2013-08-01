@@ -36,9 +36,9 @@ class RequestHandler(object):
     def __init__(self, pluginDir, analyzerDir):
         self._pluginDir = pluginDir
         self._analyzerDir = analyzerDir
-        self._filters = set()
-        self._scores = set()
-        self._balancers = set()
+        self._filters = dict()
+        self._scores = dict()
+        self._balancers = dict()
         self._utils = utils()
         self.loadModules()
 
@@ -70,20 +70,25 @@ class RequestHandler(object):
 
             availableFunctions = runner.getResults()
             moduleName = availableFunctions[0]
-            if self._utils.FILTER in availableFunctions:
-                self._filters.add(moduleName)
-            if self._utils.SCORE in availableFunctions:
-                self._scores.add(moduleName)
-
-            if self._utils.BALANCE in availableFunctions:
-                self._balancers.add(moduleName)
+            for functionName, \
+                    description, \
+                    custom_properties_map in availableFunctions[1:]:
+                if self._utils.FILTER == functionName:
+                    self._filters[moduleName]\
+                        = (description, custom_properties_map)
+                elif self._utils.SCORE == functionName:
+                    self._scores[moduleName]\
+                        = (description, custom_properties_map)
+                elif self._utils.BALANCE == functionName:
+                    self._balancers[moduleName]\
+                        = (description, custom_properties_map)
 
     def discover(self):
         #temporary?
         return {
-            "filters": list(self._filters),
-            "scores": list(self._scores),
-            "balance": list(self._balancers)}
+            "filters": self._filters,
+            "scores": self._scores,
+            "balance": self._balancers}
 
     def run_filters(self, filters, hostIDs, vmID, properties_map):
         #Intersects the results from the filters

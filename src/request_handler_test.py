@@ -30,7 +30,17 @@ class ExecutorTest(unittest.TestCase):
         executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
                                   os.path.join(os.getcwd(), 'src'))
         ret = executor.discover()
-        assert ret == {'balance': ['dummy'],
-                       'filters': ['dummy'],
-                       'scores': ['dummy']}
+        assert ret == {'balance':
+                      {'dummy':
+                       ('This is a fake balance function that returns '
+                        'always return the guid '
+                        '33333333-3333-3333-3333-333333333333', '')},
+                       'filters':
+                       {'dummy':
+                        ('This is a simple filter that '
+                         'returns all given host ID', '')},
+                       'scores':
+                       {'dummy':
+                        ('This is a simple score function that returns '
+                         'all given host ID with score 50', '')}}
         pass

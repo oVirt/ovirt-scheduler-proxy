@@ -26,8 +26,11 @@ class utils(object):
         pass
 
     FILTER = 'filterFunction'
+    FILTER_DESCRIPTION = 'describeFilter'
     SCORE = 'scoreFunction'
+    SCORE_DESCRIPTION = 'describeScore'
     BALANCE = 'balanceFunction'
+    BALANCE_DESCRIPTION = 'describeBalance'
     LOADER_MODULE = 'loader'
     LOADER_FUNC = 'analyze'
 

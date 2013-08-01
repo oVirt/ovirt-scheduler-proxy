@@ -18,6 +18,9 @@ public class SchedulerProxyTest {
 	static String[] HOST_ARRAY = new String[] { HOST_ID1, HOST_ID2 };
 	static String VM_ID  = "33333333-3333-3333-3333-333333333333";
 	static String BALANCE_RESULT = "33333333-3333-3333-3333-333333333333";
+	static String FILTER_DESCRIPTION = "This is a simple filter that returns all given host ID";
+	static String SCORE_DESCRIPTION = "This is a simple score function that returns all given host ID with score 50";
+	static String BALANCE_DESCRIPTION = "This is a fake balance function that returns always return the guid 33333333-3333-3333-3333-333333333333";
 
 	SchedulerProxy proxy;
 
@@ -28,13 +31,16 @@ public class SchedulerProxyTest {
 
 	@Test
 	public void testDiscover() throws XmlRpcException {
-		HashMap<String, List<String>> result = proxy.discover();
+		HashMap<String, HashMap<String, String[]>> result = proxy.discover();
 		assertTrue(result.containsKey("filters"));
-		assertTrue(result.get("filters").contains(FILE_NAME));
+		assertTrue(result.get("filters").containsKey((FILE_NAME)));
+		assertTrue(result.get("filters").get(FILE_NAME)[0].equals(FILTER_DESCRIPTION));
 		assertTrue(result.containsKey("scores"));
-		assertTrue(result.get("scores").contains(FILE_NAME));
+		assertTrue(result.get("scores").containsKey((FILE_NAME)));
+		assertTrue(result.get("scores").get(FILE_NAME)[0].equals(SCORE_DESCRIPTION));
 		assertTrue(result.containsKey("filters"));
-		assertTrue(result.get("balance").contains(FILE_NAME));
+		assertTrue(result.get("balance").containsKey((FILE_NAME)));
+		assertTrue(result.get("balance").get(FILE_NAME)[0].equals(BALANCE_DESCRIPTION));
 		
 	}
 	

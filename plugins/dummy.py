@@ -20,11 +20,12 @@
 #
 
 '''
-This dummy sample is the most simple filter, it will return all ID's of all the VM's passed over
+This dummy sample is the most simple example it will return all ID's of all the Hosts's passed over
 '''
 
 # do not remove this import, the ovirtsdk is not going to work without it
 from ovirtsdk.xml import params
+from ovirtsdk import api
 import ovirtsdk.infrastructure.brokers
 
 
@@ -54,6 +55,13 @@ def filterFunction(hosts, vm, args):
     print filterClassInstance.filter(hosts, vm, args)
 
 
+def describeFilter():
+    description = "This is a simple filter that returns all given host ID"
+    #this filter requires no regex
+    custom_properties_regex = ""
+    return description, custom_properties_regex
+
+
 #Files can hold all three supported functions (filterFucntion,scoreFunction,balanceFunction)
 class SampleScore():
     def __init__(self):
@@ -63,6 +71,15 @@ class SampleScore():
 
         hostScores = []
         #use hosts IDs and VM ID to call the Rest API and make a decision
+        '''
+            Sample code:
+            #take from configuration
+            api = API(url='http://host:port', username='user@domain', password='password')
+            for id in hosts:
+                hostObject = api.hosts.get(query='id=' + id)
+
+            ... etc
+        '''
         for hostID in hosts:
             #Do work
             hostScores.append((hostID, 50))
@@ -73,6 +90,13 @@ class SampleScore():
 def scoreFunction(hosts, vm, args):
     scoreClassInstance = SampleScore()
     print scoreClassInstance.score(hosts, vm, args)
+
+
+def describeScore():
+    description = "This is a simple score function that returns all given host ID with score 50"
+    #this score function requires no regex
+    custom_properties_regex = ""
+    return description, custom_properties_regex
 
 
 class SampleBalance():
@@ -87,3 +111,11 @@ class SampleBalance():
 def balanceFunction(hosts, args):
     balanceInstance = SampleBalance()
     print balanceInstance.balance(hosts, args)
+
+
+def describeBalance():
+    description = "This is a fake balance function that returns always return the " \
+                  "guid 33333333-3333-3333-3333-333333333333"
+    #this score function requires no regex
+    custom_properties_regex = ""
+    return description, custom_properties_regex
