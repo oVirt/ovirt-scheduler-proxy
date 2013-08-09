@@ -52,3 +52,7 @@ stop:
 
 clean:
 	find -name "*.pyc" -exec rm {} \;
+
+restart:
+	$(MAKE) stop
+	$(MAKE) start

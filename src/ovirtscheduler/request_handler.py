@@ -107,19 +107,20 @@ class RequestHandler(object):
             "scores": self._scores,
             "balance": self._balancers}
 
+    def aggregate_filter_results(self, filterRunners):
+        resultSet = []
+        for runner in filterRunners:
+            if runner.getResults() is None:
+                continue
+            hosts = runner.getResults()
+            if resultSet is None:
+                resultSet = set(hosts)
+                continue
+            resultSet = resultSet.intersection(hosts)
+        return list(resultSet)
+
     def run_filters(self, filters, hostIDs, vmID, properties_map):
         #Intersects the results from the filters
-        def aggregateResults(filterRunners):
-            resultSet = None
-            for runner in filterRunners:
-                if runner.getResults() is None:
-                    continue
-                hosts = runner.getResults()
-                if resultSet is None:
-                    resultSet = set(hosts)
-                    continue
-                resultSet = resultSet.intersection(hosts)
-            return list(resultSet)
         #run each filter in a process for robustness
         filterRunners = []
         for f in filters:
@@ -139,7 +140,7 @@ class RequestHandler(object):
         #TODO add timeout config
         self._utils.waitOnGroup(filterRunners)
 
-        return aggregateResults(filterRunners)
+        return self.aggregate_filter_results(filterRunners)
 
     def run_cost_functions(self,
                            cost_functions,

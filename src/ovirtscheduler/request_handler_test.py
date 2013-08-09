@@ -44,3 +44,28 @@ class ExecutorTest(unittest.TestCase):
                         ('This is a simple score function that returns '
                          'all given host ID with score 50', '')}}
         pass
+
+    '''
+    Tests if the empty filterRunners array results in an None or exception
+    in such cases the xmlrpc will fail
+    '''
+    def test_aggregate_filter_results_empty(self):
+        executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
+                                  os.path.join(os.getcwd(), 'src'))
+        filterRunners = []
+        assert executor.aggregate_filter_results(filterRunners) is not None
+
+    '''
+    Checks that the aggregate filter will not return a None or exception even
+    if the runner returns None
+    '''
+    def test_aggregate_filter_results_singleNone(self):
+        executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
+                                  os.path.join(os.getcwd(), 'src'))
+
+        class NoneResultRunner:
+            def getResults(self):
+                return None
+
+        filterRunners = [NoneResultRunner()]
+        assert executor.aggregate_filter_results(filterRunners) is not None
