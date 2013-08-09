@@ -1,0 +1,14 @@
+[Unit]
+Description=oVirt Scheduler Proxy
+After=network.service
+
+[Service]
+Type=simple
+User=ovirt
+Group=ovirt
+WorkingDirectory=/usr/share/ovirt-scheduler-proxy
+ExecStart=/usr/bin/python -m ovirtscheduler.oschedproxyd
+EnvironmentFile=-/etc/sysconfig/ovirt-scheduler-proxy
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,76 @@
+#!/bin/sh
+#
+# ovirt-scheduler-proxy Startup script for the oVirt Scheduler Proxy
+#
+# chkconfig: - 66 33
+# description: oVirt Scheduler Proxy
+# pidfile: /var/run/ovirt-scheduler-proxy.pid
+
+# Source function library:
+. /etc/rc.d/init.d/functions
+
+name="ovirt-scheduler-proxy"
+prog="oVirt Scheduler Proxy"
+pidfile="/var/run/${name}.pid"
+lockfile="/var/lock/subsys/${name}"
+retval=0
+
+if [ -f "/etc/sysconfig/${name}" ]
+then
+    . "/etc/sysconfig/${name}"
+fi
+
+case "$1" in
+
+start)
+    echo -n $"Starting $prog: "
+    touch "${pidfile}"
+    chown ovirt "${pidfile}"
+    pushd "/usr/share/${name}" &>/dev/null
+        daemon \
+            --user=ovirt \
+            "python -m ovirtscheduler.oschedproxyd &>/var/log/${name}/console.log & echo \$! >${pidfile}"
+    popd &>/dev/null
+    retval=$?
+    echo
+    if [ "${retval}" -eq 0 ]
+    then
+        touch "${lockfile}"
+    else
+        if [ -f "${lockfile}" ]
+        then
+            retval=0
+        fi
+    fi
+;;
+
+stop)
+    echo -n $"Stopping $prog: "
+    killproc -p "${pidfile}" -d 10
+    retval=$?
+    echo
+    if [ "${retval}" -eq 0 ]
+    then
+        rm -f "${lockfile}"
+    fi
+;;
+
+status)
+    status -p "${pidfile}" "${name}"
+    retval=$?
+;;
+
+restart)
+    $0 stop
+    $0 start
+    retval=$?
+    ;;
+
+*)
+    echo $"Usage: $0 {start|stop|status|restart}"
+    exit 2
+    ;;
+
+esac
+
+exit ${retval}

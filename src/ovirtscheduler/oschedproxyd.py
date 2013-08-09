@@ -32,8 +32,7 @@ class SimpleThreadedXMLRPCServer(SocketServer.ThreadingMixIn,
     pass
 
 
-log_filename = '/var/log/ovirt/ovirt-scheduler-proxy.'\
-    + strftime("%Y%m%d_%H%M%S") + '.log'
+log_filename = '/var/log/ovirt-scheduler-proxy/ovirt-scheduler-proxy.log'
 
 try:
     logging.basicConfig(level=logging.DEBUG,
