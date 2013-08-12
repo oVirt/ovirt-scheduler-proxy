@@ -28,7 +28,8 @@ class ExecutorTest(unittest.TestCase):
 
     def test_discover(self):
         executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
-                                  os.path.join(os.getcwd(), 'src'))
+                                  os.path.join(os.getcwd(), 'src',
+                                               'ovirtscheduler'))
         ret = executor.discover()
         assert ret == {'balance':
                       {'dummy':
