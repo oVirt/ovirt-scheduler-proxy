@@ -40,7 +40,6 @@ class PythonMethodRunner(Thread):
             self._result = literal_eval(result)
             self._error = error
         except Exception as ex:
-            print ex
             self._error = ex
 
     def getResults(self):

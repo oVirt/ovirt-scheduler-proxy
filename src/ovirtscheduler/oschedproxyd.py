@@ -65,13 +65,14 @@ class ProxyServer():
                                                   allow_none=True)
 
         # TODO make by config
-        logging.info("Loading modules")
+        logging.info("Loading modules from " + str(os.getcwd()) + "plugins")i
+        logging.info("Loading analyzer from " + str(os.path.dirname(__file__)))
         self._handler = RequestHandler(
             os.path.join(os.getcwd(), "plugins"),
-            os.path.join(os.getcwd(), "src"))
+            os.path.join(str(os.path.dirname(__file__))))
 
     def run(self):
-        logging.info("Loading modules")
+        logging.info("Publishing API")
         self._server.register_introspection_functions()
         self._server.register_instance(API(self._handler))
         self._server.serve_forever()

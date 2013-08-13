@@ -22,6 +22,7 @@
 import os
 from runner import PythonMethodRunner
 from utils import utils
+import logging
 
 
 class RequestHandler(object):
@@ -48,6 +49,7 @@ class RequestHandler(object):
     '''
     def loadModules(self):
         loaderRunners = []
+        module_files = []
         for fileName in os.listdir(self._pluginDir):
             if not os.path.splitext(fileName)[1] == '.py':
                 continue
@@ -58,13 +60,23 @@ class RequestHandler(object):
                 self._utils.LOADER_FUNC,
                 (self._pluginDir, module))
             loaderRunners.append(runner)
+            module_files.append(module)
 
+        logging.info("loadModules::Trying to load the following files: " +
+                     str(module_files))
         for runner in loaderRunners:
             runner.start()
 
         self._utils.waitOnGroup(loaderRunners)
 
         for runner in loaderRunners:
+            logging.debug("loadModules::script: " + str(runner._script))
+            logging.info("loadModules::registering: " +
+                         str(runner.getResults()))
+
+            if str(runner.getErrors()):
+                logging.error("loadModules::External module failed with error - " + str(runner.getErrors()))
+
             if runner.getResults() is None:
                 continue
 
@@ -82,6 +94,11 @@ class RequestHandler(object):
                 elif self._utils.BALANCE == functionName:
                     self._balancers[moduleName]\
                         = (description, custom_properties_map)
+
+        logging.info("loadModules::registering::loaded- " +
+                     "filters:" + str(self._filters) +
+                     "    scores:" + str(self._scores) +
+                     "    balancers:" + str(self._balancers))
 
     def discover(self):
         #temporary?
