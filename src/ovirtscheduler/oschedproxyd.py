@@ -65,7 +65,7 @@ class ProxyServer():
                                                   allow_none=True)
 
         # TODO make by config
-        logging.info("Loading modules from " + str(os.getcwd()) + "plugins")i
+        logging.info("Loading modules from " + str(os.getcwd()) + "plugins")
         logging.info("Loading analyzer from " + str(os.path.dirname(__file__)))
         self._handler = RequestHandler(
             os.path.join(os.getcwd(), "plugins"),
