@@ -40,7 +40,13 @@ class PythonMethodRunner(Thread):
             self._logger.debug('running %s in %s', self._script, self._path)
             self._process = self._utils.createProcess(self._script, self._path)
             (result, error) = self._process.communicate()
-            self._result = literal_eval(result)
+            try:
+                self._result = literal_eval(result)
+            except Exception as ex:
+                if not error:
+                    self._error = "PythonMethodRunner::" \
+                                  "Unable to parse result:" \
+                                  + str(result) + " got error : " + str(ex)
             self._error = error
         except Exception as ex:
             self._error = ex

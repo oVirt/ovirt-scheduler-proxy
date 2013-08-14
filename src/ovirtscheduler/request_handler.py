@@ -68,7 +68,9 @@ class RequestHandler(object):
         for runner in loaderRunners:
             runner.start()
 
-        self._utils.waitOnGroup(loaderRunners)
+        if(self._utils.waitOnGroup(loaderRunners)):
+            logging.warning("loadModules::Waiting on loading "
+                            "+ modules timed out")
 
         for runner in loaderRunners:
             logging.debug("loadModules::script: " + str(runner._script))
@@ -126,9 +128,11 @@ failed with error - %s ", str(runner.getErrors()))
         #Intersects the results from the filters
         #run each filter in a process for robustness
         filterRunners = []
+        logging.info("run_filters:: got filters request: " + str(filters))
         for f in filters:
             if f not in self._filters:
-                #log?
+                logging.warning("run_filters::Filter requested but "
+                                "+ was not found: " + f)
                 continue
             runner = PythonMethodRunner(
                 self._pluginDir,
@@ -140,9 +144,12 @@ failed with error - %s ", str(runner.getErrors()))
         for runner in filterRunners:
             runner.start()
 
+        logging.debug("run_filters::Waiting for filters to finish")
         #TODO add timeout config
-        self._utils.waitOnGroup(filterRunners)
+        if(self._utils.waitOnGroup(filterRunners)):
+            logging.warning("run_filters::Waiting on filters timed out")
 
+        logging.debug("run_filters::Aggregating results")
         return self.aggregate_filter_results(filterRunners)
 
     def run_cost_functions(self,
@@ -168,9 +175,13 @@ failed with error - %s ", str(runner.getErrors()))
         #run each filter in a process for robustness
         scoreRunners = []
         weights = []
+        logging.info("run_cost_functions:: got scoring request: "
+                     + str(cost_functions))
         for name, weight in cost_functions:
             if name not in self._scores:
-                #log?
+                logging.warning("run_cost_functions::Score function requested"
+                                + " but was not found: "
+                                + name)
                 continue
             runner = PythonMethodRunner(
                 self._pluginDir,
@@ -183,13 +194,19 @@ failed with error - %s ", str(runner.getErrors()))
         for runner in scoreRunners:
             runner.start()
 
-        self._utils.waitOnGroup(scoreRunners)
+        logging.debug("run_cost_functions::Waiting for scoring to finish")
+        if(self._utils.waitOnGroup(scoreRunners)):
+            logging.warning("run_cost_functions::Waiting on score functions"
+                            + " timed out")
 
+        logging.debug("run_cost_functions::Aggregating results")
         return aggregateResults(zip(scoreRunners, weights))
 
     def run_load_balancing(self, balance, hostIDs, properties_map):
         if balance not in self._balancers:
-            #log?
+            logging.warning("run_load_balancing::Load balance requested but "
+                            + "was not found: "
+                            + balance)
             return
 
         runner = PythonMethodRunner(self._pluginDir,
@@ -198,5 +215,7 @@ failed with error - %s ", str(runner.getErrors()))
                                     (hostIDs, properties_map))
 
         runner.start()
+        logging.debug("run_load_balancing::Waiting for balance to finish")
         runner.join(30)
+        logging.debug("run_load_balancing::returning results")
         return runner.getResults()

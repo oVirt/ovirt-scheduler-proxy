@@ -19,7 +19,7 @@ public class SchedulerProxyTest {
 	static String VM_ID  = "33333333-3333-3333-3333-333333333333";
 	static String FILTER_DESCRIPTION = "This is a simple filter that returns all given host ID";
 	static String SCORE_DESCRIPTION = "This is a simple score function that returns all given host ID with score 50";
-	static String BALANCE_DESCRIPTION = "This is a fake balance function that returns always return the guid 33333333-3333-3333-3333-333333333333";
+	static String BALANCE_DESCRIPTION = "This is a fake balance function that always return the guid 33333333-3333-3333-3333-333333333333";
 
 	SchedulerProxy proxy;
 

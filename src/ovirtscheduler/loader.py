@@ -2,6 +2,7 @@ import os
 import utils
 import sys
 
+
 _utils = utils.utils()
 
 '''
@@ -11,10 +12,10 @@ _utils = utils.utils()
 
 
 def analyze(path, name):
+    retValue = (name,)
     try:
         os.chdir(path)
         mod = __import__(name)
-        retValue = (name,)
         if hasattr(mod, _utils.FILTER):
             if hasattr(mod, _utils.FILTER_DESCRIPTION):
                 description, custom_properties_map\

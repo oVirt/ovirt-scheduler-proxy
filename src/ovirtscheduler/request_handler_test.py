@@ -34,8 +34,8 @@ class ExecutorTest(unittest.TestCase):
         print ret
         assert ret == {'balance':
                       {'dummy':
-                       ('This is a fake balance function that returns '
-                        'always return the guid '
+                       ('This is a fake balance function that always '
+                        'return the guid '
                         '33333333-3333-3333-3333-333333333333', '')},
                        'filters':
                        {'dummy':

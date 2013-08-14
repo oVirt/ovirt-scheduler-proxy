@@ -19,14 +19,24 @@
 # Refer to the README and COPYING files for full details of the license
 #
 
-'''
-This dummy sample is the most simple example it will return all ID's of all the Hosts's passed over
-'''
+# USAGE:
+#
+#   To create an external scheduler plugin your file must have at least one of the
+#   following functions: filterFunction, scoreFunction, balanceFunction.
+#   If you wish to supply a description and parameters regex you can also
+#   create a description function: describeScore/describeScore/describeBalance.
+#
+#   Remember that communication to the external scheduler will occur through
+#   stdout/stderr because the plugin will run as a separate process.
+#   So use print instead of return, and print >> sys.stderr instead of
+#   throwing an exception
+
 
 # do not remove this import, the ovirtsdk is not going to work without it
 from ovirtsdk.xml import params
 from ovirtsdk import api
 import ovirtsdk.infrastructure.brokers
+import sys
 
 
 class SampleFilter():
@@ -49,10 +59,13 @@ class SampleFilter():
 # Notice: plugin filters are going to run in process that will be created and destroyed
 #  per request, you cannot save state in memory
 def filterFunction(hosts, vm, args):
-    filterClassInstance = SampleFilter()
-    #as this will run as a process, communications will be through stdout
-    #use log and not print if you want to have debug information
-    print filterClassInstance.filter(hosts, vm, args)
+    try:
+        filterClassInstance = SampleFilter()
+        #as this will run as a process, communications will be through stdout
+        #use log and not print if you want to have debug information
+        print filterClassInstance.filter(hosts, vm, args)
+    except Exception as ex:
+        print >> sys.stderr, ex
 
 
 def describeFilter():
@@ -88,8 +101,11 @@ class SampleScore():
 
 
 def scoreFunction(hosts, vm, args):
-    scoreClassInstance = SampleScore()
-    print scoreClassInstance.score(hosts, vm, args)
+    try:
+        scoreClassInstance = SampleScore()
+        print scoreClassInstance.score(hosts, vm, args)
+    except Exception as ex:
+        print >> sys.stderr, ex
 
 
 def describeScore():
@@ -110,12 +126,15 @@ class SampleBalance():
 
 
 def balanceFunction(hosts, args):
-    balanceInstance = SampleBalance()
-    print balanceInstance.balance(hosts, args)
+    try:
+        balanceInstance = SampleBalance()
+        print balanceInstance.balance(hosts, args)
+    except Exception as ex:
+        print >> sys.stderr, ex
 
 
 def describeBalance():
-    description = "This is a fake balance function that returns always return the " \
+    description = "This is a fake balance function that always return the " \
                   "guid 33333333-3333-3333-3333-333333333333"
     #this score function requires no regex
     custom_properties_regex = ""

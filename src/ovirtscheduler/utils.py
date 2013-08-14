@@ -68,15 +68,19 @@ class utils(object):
         wait for a group of runners up to a timeout and stop them
     '''
     def waitOnGroup(self, runners, timeout=30):
+        timedOut = False
         expireTime = time() + timeout
         for runner in runners:
             timeLeft = expireTime - time()
             if timeLeft < 0:
+                timedOut = True
                 break
             runner.join(timeLeft)
         #Make sure we dont have dangling processes
         for runner in runners:
             runner.stop()
+
+        return timedOut
 
     '''
         converts args to a string
