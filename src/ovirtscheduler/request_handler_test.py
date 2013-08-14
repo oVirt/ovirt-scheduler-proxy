@@ -31,6 +31,7 @@ class ExecutorTest(unittest.TestCase):
                                   os.path.join(os.getcwd(), 'src',
                                                'ovirtscheduler'))
         ret = executor.discover()
+        print ret
         assert ret == {'balance':
                       {'dummy':
                        ('This is a fake balance function that returns '
@@ -65,6 +66,9 @@ class ExecutorTest(unittest.TestCase):
                                   os.path.join(os.getcwd(), 'src'))
 
         class NoneResultRunner:
+            def __init__(self):
+                self._script = 'test'
+
             def getResults(self):
                 return None
 

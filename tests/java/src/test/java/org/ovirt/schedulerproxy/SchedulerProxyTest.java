@@ -46,7 +46,7 @@ public class SchedulerProxyTest {
 	@Test
 	public void testFilter() throws XmlRpcException {
 		List<String> result = proxy.filter(new String[] { FILE_NAME }, HOST_ARRAY, VM_ID, "");
-		assertTrue(result.size() == 2);
+		assertTrue(result.size() == HOST_ARRAY.length);
 		assertTrue(result.contains(HOST_ID1));
 		assertTrue(result.contains(HOST_ID2));
 	}

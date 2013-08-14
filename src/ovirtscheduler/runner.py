@@ -21,11 +21,13 @@
 from threading import Thread
 from ast import literal_eval
 from utils import utils
+import logging
 
 
 class PythonMethodRunner(Thread):
     def __init__(self, path, module, method, args):
         super(PythonMethodRunner, self).__init__(group=None)
+        self._logger = logging.getLogger()
         self._path = path
         self._result = None
         self._error = None
@@ -35,6 +37,7 @@ class PythonMethodRunner(Thread):
 
     def run(self):
         try:
+            self._logger.debug('running %s in %s', self._script, self._path)
             self._process = self._utils.createProcess(self._script, self._path)
             (result, error) = self._process.communicate()
             self._result = literal_eval(result)

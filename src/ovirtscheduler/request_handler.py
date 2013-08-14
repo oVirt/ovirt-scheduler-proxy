@@ -35,6 +35,7 @@ class RequestHandler(object):
     plugin_dir -- the directory where the plugin scripts are located
     '''
     def __init__(self, pluginDir, analyzerDir):
+        self._logger = logging.getLogger('RequestHandler')
         self._pluginDir = pluginDir
         self._analyzerDir = analyzerDir
         self._filters = dict()
@@ -75,7 +76,8 @@ class RequestHandler(object):
                          str(runner.getResults()))
 
             if str(runner.getErrors()):
-                logging.error("loadModules::External module failed with error - " + str(runner.getErrors()))
+                logging.error("loadModules::External module\
+failed with error - %s ", str(runner.getErrors()))
 
             if runner.getResults() is None:
                 continue
@@ -108,12 +110,13 @@ class RequestHandler(object):
             "balance": self._balancers}
 
     def aggregate_filter_results(self, filterRunners):
-        resultSet = []
+        resultSet = set()
         for runner in filterRunners:
             if runner.getResults() is None:
+                self._logger.warn('No results from %s', runner._script)
                 continue
-            hosts = runner.getResults()
-            if resultSet is None:
+            hosts = set(runner.getResults())
+            if not resultSet:
                 resultSet = set(hosts)
                 continue
             resultSet = resultSet.intersection(hosts)
