@@ -26,11 +26,14 @@ class utils(object):
         pass
 
     FILTER = 'filterFunction'
-    FILTER_DESCRIPTION = 'describeFilter'
+    FILTER_DESCRIPTION = 'desc_filter'
+    FILTER_REGEX = 'regex_filter'
     SCORE = 'scoreFunction'
-    SCORE_DESCRIPTION = 'describeScore'
+    SCORE_DESCRIPTION = 'desc_score'
+    SCORE_REGEX = 'regex_score'
     BALANCE = 'balanceFunction'
-    BALANCE_DESCRIPTION = 'describeBalance'
+    BALANCE_DESCRIPTION = 'desc_balance'
+    BALANCE_REGEX = 'regex_balance'
     LOADER_MODULE = 'loader'
     LOADER_FUNC = 'analyze'
 

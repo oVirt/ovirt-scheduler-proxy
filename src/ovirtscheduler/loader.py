@@ -16,33 +16,32 @@ def analyze(path, name):
     try:
         os.chdir(path)
         mod = __import__(name)
-        if hasattr(mod, _utils.FILTER):
-            if hasattr(mod, _utils.FILTER_DESCRIPTION):
-                description, custom_properties_map\
-                    = getattr(mod, _utils.FILTER_DESCRIPTION)()
-                retValue +=\
-                    ((_utils.FILTER, description, custom_properties_map),)
-            else:
-                retValue += ((_utils.FILTER, "", ""),)
 
-        if hasattr(mod, _utils.SCORE):
-            if hasattr(mod, _utils.SCORE_DESCRIPTION):
-                description, custom_properties_map\
-                    = getattr(mod, _utils.SCORE_DESCRIPTION)()
-                retValue +=\
-                    ((_utils.SCORE, description, custom_properties_map),)
-            else:
-                retValue += ((_utils.SCORE, "", ""),)
-
-        if hasattr(mod, _utils.BALANCE):
-            if hasattr(mod, _utils.BALANCE_DESCRIPTION):
-                description, custom_properties_map\
-                    = getattr(mod, _utils.BALANCE_DESCRIPTION)()
-                retValue +=\
-                    ((_utils.BALANCE, description, custom_properties_map),)
-            else:
-                retValue += ((_utils.BALANCE, "", ""),)
+        retValue += \
+            getAttributes(mod,
+                          _utils.FILTER,
+                          _utils.FILTER_REGEX)
+        retValue += \
+            getAttributes(mod,
+                          _utils.SCORE,
+                          _utils.SCORE_REGEX)
+        retValue += \
+            getAttributes(mod,
+                          _utils.BALANCE,
+                          _utils.BALANCE_REGEX)
     except Exception as ex:
         print >> sys.stderr, ex
 
     print retValue
+
+
+def getAttributes(mod, function_name, regex_name):
+    description = ""
+    regex_map = ""
+    if hasattr(mod, function_name):
+            description = getattr(mod, function_name).__doc__
+            if hasattr(mod, regex_name):
+                regex_map = getattr(mod, regex_name)
+            return ((function_name, description, regex_map),)
+    else:
+        return ()

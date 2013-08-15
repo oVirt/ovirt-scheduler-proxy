@@ -59,6 +59,7 @@ class SampleFilter():
 # Notice: plugin filters are going to run in process that will be created and destroyed
 #  per request, you cannot save state in memory
 def filterFunction(hosts, vm, args):
+    '''This is a simple filter that returns all given host ID'''
     try:
         filterClassInstance = SampleFilter()
         #as this will run as a process, communications will be through stdout
@@ -67,12 +68,7 @@ def filterFunction(hosts, vm, args):
     except Exception as ex:
         print >> sys.stderr, ex
 
-
-def describeFilter():
-    description = "This is a simple filter that returns all given host ID"
-    #this filter requires no regex
-    custom_properties_regex = ""
-    return description, custom_properties_regex
+regex_filter = ""
 
 
 #Files can hold all three supported functions (filterFucntion,scoreFunction,balanceFunction)
@@ -101,18 +97,14 @@ class SampleScore():
 
 
 def scoreFunction(hosts, vm, args):
+    '''This is a simple score function that returns all given host ID with score 50'''
     try:
         scoreClassInstance = SampleScore()
         print scoreClassInstance.score(hosts, vm, args)
     except Exception as ex:
         print >> sys.stderr, ex
 
-
-def describeScore():
-    description = "This is a simple score function that returns all given host ID with score 50"
-    #this score function requires no regex
-    custom_properties_regex = ""
-    return description, custom_properties_regex
+regex_score = ""
 
 
 class SampleBalance():
@@ -126,16 +118,11 @@ class SampleBalance():
 
 
 def balanceFunction(hosts, args):
+    '''This is a fake balance function that always return the guid 33333333-3333-3333-3333-333333333333'''
     try:
         balanceInstance = SampleBalance()
         print balanceInstance.balance(hosts, args)
     except Exception as ex:
         print >> sys.stderr, ex
 
-
-def describeBalance():
-    description = "This is a fake balance function that always return the " \
-                  "guid 33333333-3333-3333-3333-333333333333"
-    #this score function requires no regex
-    custom_properties_regex = ""
-    return description, custom_properties_regex
+regex_balance = ""
