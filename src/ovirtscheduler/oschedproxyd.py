@@ -32,32 +32,19 @@ class SimpleThreadedXMLRPCServer(SocketServer.ThreadingMixIn,
     pass
 
 
-log_filename = '/var/log/ovirt-scheduler-proxy/ovirt-scheduler-proxy.log'
-
-try:
+def setup_logging(path):
     logging.basicConfig(level=logging.DEBUG,
                         name="ovirt-scheduler-proxy",
                         format='%(asctime)s %(levelname)-8s %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=log_filename,
-                        filemode='w')
-except:
-    log_filename = './ovirt-scheduler-proxy.'\
-        + strftime("%Y%m%d_%H%M%S") + '.log'
-    logging.basicConfig(level=logging.DEBUG,
-                        name="ovirt-scheduler-proxy",
-                        format='%(asctime)s %(levelname)-8s %(message)s',
-                        datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=log_filename,
+                        filename=path,
                         filemode='w')
 
 
-class ProxyServer():
-    _server = ""
-    _handler = ""
-
+class ProxyServer(object):
     def __init__(self):
-        pass
+        self._server = None
+        self._handler = None
 
     def setup(self):
         logging.info("Setting up server")
@@ -65,11 +52,15 @@ class ProxyServer():
                                                   allow_none=True)
 
         # TODO make by config
-        logging.info("Loading modules from " + str(os.getcwd()) + "plugins")
-        logging.info("Loading analyzer from " + str(os.path.dirname(__file__)))
+        plugins_path = os.path.join(os.getcwd(), "plugins")
+        analyzer_path = os.path.dirname(__file__)
+
+        logging.info("Loading modules from %s" % plugins_path)
+        logging.info("Loading analyzer from %s" % analyzer_path)
+
         self._handler = RequestHandler(
-            os.path.join(os.getcwd(), "plugins"),
-            os.path.join(str(os.path.dirname(__file__))))
+            plugins_path,
+            analyzer_path)
 
     def run(self):
         logging.info("Publishing API")
@@ -86,4 +77,11 @@ def main():
 
 
 if __name__ == "__main__":
+    log_filename = '/var/log/ovirt-scheduler-proxy/ovirt-scheduler-proxy.log'
+    try:
+        setup_logging(log_filename)
+    except IOError:
+        log_filename = './ovirt-scheduler-proxy.' \
+                       + strftime("%Y%m%d_%H%M%S") + '.log'
+        setup_logging(log_filename)
     main()

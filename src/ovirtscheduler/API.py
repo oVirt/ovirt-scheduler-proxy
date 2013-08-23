@@ -20,11 +20,10 @@
 
 
 class API(object):
-    '''
+    """
     This class holds the proxy's exposed API to be used by oVirt engine.
     See http://www.ovirt.org/Features/oVirt_External_Scheduling_Proxy
-    '''
-    _plugin_executor = None
+    """
 
     def __init__(self, executor):
         self._plugin_executor = executor

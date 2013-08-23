@@ -20,7 +20,7 @@
 
 from threading import Thread
 from ast import literal_eval
-from utils import utils
+import utils
 import logging
 
 
@@ -32,21 +32,20 @@ class PythonMethodRunner(Thread):
         self._result = None
         self._error = None
         self._process = None
-        self._utils = utils()
         self._script = self.createScript(module, method, args)
 
     def run(self):
         try:
             self._logger.debug('running %s in %s', self._script, self._path)
-            self._process = self._utils.createProcess(self._script, self._path)
+            self._process = utils.createProcess(self._script, self._path)
             (result, error) = self._process.communicate()
             try:
                 self._result = literal_eval(result)
             except Exception as ex:
                 if not error:
                     self._error = "PythonMethodRunner::" \
-                                  "Unable to parse result:" \
-                                  + str(result) + " got error : " + str(ex)
+                                  "Unable to parse result: %s" \
+                                  " got error : %s " % (result, ex)
             self._error = error
         except Exception as ex:
             self._error = ex
@@ -58,12 +57,14 @@ class PythonMethodRunner(Thread):
         return self._error
 
     def stop(self):
-        return self._utils.killProcess(self._process)
+        return utils.killProcess(self._process)
 
     def createScript(self, module, method, args):
-        commandString = (
-            "import " +
-            module + ";" +
-            module + "." +
-            method + self._utils.createFunctionStringArgs(args))
+        commandTemplate = "import %(module)s; %(module)s.%(method)s%(args)s"
+        commandString = commandTemplate % {
+            "module": module,
+            "method": method,
+            "args": repr(utils.createFunctionArgs(args))
+        }
+
         return ["python", "-c", commandString]

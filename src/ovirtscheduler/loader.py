@@ -3,14 +3,6 @@ import utils
 import sys
 
 
-_utils = utils.utils()
-
-'''
-    Loads a module and checks if it has certain functions
-    Will run as a process for safety, so it prints the result to stdout
-'''
-
-
 def analyze(path, name):
     retValue = (name,)
     try:
@@ -19,16 +11,16 @@ def analyze(path, name):
 
         retValue += \
             getAttributes(mod,
-                          _utils.FILTER,
-                          _utils.FILTER_REGEX)
+                          utils.FILTER,
+                          utils.FILTER_REGEX)
         retValue += \
             getAttributes(mod,
-                          _utils.SCORE,
-                          _utils.SCORE_REGEX)
+                          utils.SCORE,
+                          utils.SCORE_REGEX)
         retValue += \
             getAttributes(mod,
-                          _utils.BALANCE,
-                          _utils.BALANCE_REGEX)
+                          utils.BALANCE,
+                          utils.BALANCE_REGEX)
     except Exception as ex:
         print >> sys.stderr, ex
 

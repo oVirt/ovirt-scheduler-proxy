@@ -20,78 +20,93 @@
 import subprocess
 from time import time
 
+FILTER = 'filterFunction'
+FILTER_DESCRIPTION = 'desc_filter'
+FILTER_REGEX = 'regex_filter'
+SCORE = 'scoreFunction'
+SCORE_DESCRIPTION = 'desc_score'
+SCORE_REGEX = 'regex_score'
+BALANCE = 'balanceFunction'
+BALANCE_DESCRIPTION = 'desc_balance'
+BALANCE_REGEX = 'regex_balance'
+LOADER_MODULE = 'loader'
+LOADER_FUNC = 'analyze'
 
-class utils(object):
-    def __init__(self):
-        pass
 
-    FILTER = 'filterFunction'
-    FILTER_DESCRIPTION = 'desc_filter'
-    FILTER_REGEX = 'regex_filter'
-    SCORE = 'scoreFunction'
-    SCORE_DESCRIPTION = 'desc_score'
-    SCORE_REGEX = 'regex_score'
-    BALANCE = 'balanceFunction'
-    BALANCE_DESCRIPTION = 'desc_balance'
-    BALANCE_REGEX = 'regex_balance'
-    LOADER_MODULE = 'loader'
-    LOADER_FUNC = 'analyze'
-
-    '''
+def createProcess(script, runLocation=None):
+    """
         Creates a process from script
-    '''
-    def createProcess(self, script, runLocation):
-        #script should be a list and not a string
-        if isinstance(script, basestring):
-            script = [script]
-        process = subprocess.Popen(script,
-                                   stdin=subprocess.PIPE,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE,
-                                   cwd=runLocation)
-        return process
+    """
+    #script should be a list and not a string
+    if isinstance(script, basestring):
+        script = [script]
+    process = subprocess.Popen(script,
+                               stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE,
+                               cwd=runLocation)
+    return process
 
-    '''
+
+def execInProcess(script, script_input=None):
+    """
        Create a process and execute it
        Done synchronously
-    '''
-    def execInProcess(self, script, script_input=None):
-        process = self.createProcess(script)
-        return process.communicate(script_input)
+    """
+    process = createProcess(script)
+    return process.communicate(script_input)
 
-    '''
-        kill only if the process started and has not
-        finished yet (returncode is None if the process is alive)
-    '''
-    def killProcess(self, process):
-        if (process is not None) and (process.returncode is None):
-            return process.kill()
 
-    '''
-        wait for a group of runners up to a timeout and stop them
-    '''
-    def waitOnGroup(self, runners, timeout=30):
-        timedOut = False
-        expireTime = time() + timeout
-        for runner in runners:
-            timeLeft = expireTime - time()
-            if timeLeft < 0:
-                timedOut = True
-                break
-            runner.join(timeLeft)
-        #Make sure we dont have dangling processes
-        for runner in runners:
-            runner.stop()
+def killProcess(process):
+    """
+    kill only if the process started and has not
+    finished yet (returncode is None if the process is alive)
+    """
+    if (process is not None) and (process.returncode is None):
+        return process.kill()
 
-        return timedOut
 
-    '''
-        converts args to a string
-    '''
-    def createFunctionStringArgs(self, args):
-        if args is None:
-            return '()'
-        if isinstance(args, basestring):
-            return '(' + args + ')'
-        # then it must be some kind of list, return as (a,b, ...)
-        return str(tuple(args))
+def waitOnGroup(runners, timeout=30):
+    """
+    wait for a group of runners up to a timeout and stop them
+    """
+    timedOut = False
+    expireTime = time() + timeout
+    for runner in runners:
+        timeLeft = expireTime - time()
+        if timeLeft < 0:
+            timedOut = True
+            break
+        runner.join(timeLeft)
+    #Make sure we dont have dangling processes
+    for runner in runners:
+        runner.stop()
+
+    return timedOut
+
+
+def createFunctionArgs(args):
+    """
+    Converts args to a tuple we can pass to a function using the
+    *args method.
+    """
+    if args is None:
+        return tuple()
+    if isinstance(args, basestring):
+        return (args,)
+    # then it must be some kind of list, return as (a,b, ...)
+    return tuple(args)
+
+
+def partition(data, pred):
+    """
+    Behaves as a simple filter, but returns a tuple with two lists.
+    The first one contains elements where the predicate returned True
+    and the second one the rest.
+
+    >>> partition([0, 1, 2, 3, 4, 5], lambda x: x % 2)
+    ([1, 3, 5], [0, 2, 4])
+    """
+    # append returns None and we want to return the list, that is why there
+    # is the or statement
+    return reduce(lambda x, y: x[not pred(y)].append(y) or x, data, ([], []))
