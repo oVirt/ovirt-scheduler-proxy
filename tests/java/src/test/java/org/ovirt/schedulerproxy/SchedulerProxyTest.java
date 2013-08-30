@@ -51,6 +51,11 @@ public class SchedulerProxyTest {
         assertTrue(result.contains(HOST_ID2));
     }
 
+    @Test(expected = XmlRpcException.class)
+    public void testFilterWithNotExistingPLugin() throws XmlRpcException {
+        proxy.filter(new String[] { "NOTEXISTINGPLUGIN-" + System.currentTimeMillis() }, HOST_ARRAY, VM_ID, "");
+    }
+
     @Test
     public void testScore() throws XmlRpcException {
         HashMap<String, Integer> result =

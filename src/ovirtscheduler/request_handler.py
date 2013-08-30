@@ -130,10 +130,11 @@ class RequestHandler(object):
         avail_f, missing_f = utils.partition(filters,
                                              lambda f: f in self._filters)
 
-        # report missing filters
+        # handle missing filters
         for f in missing_f:
             self._logger.warning("run_filters::Filter requested but "
                                  "was not found: %s", f)
+            raise RuntimeError("plugin not found: "+f)
 
         # Prepare a generator "list" of runners
         filterRunners = [
