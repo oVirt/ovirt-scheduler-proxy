@@ -33,16 +33,16 @@ class ExecutorTest(unittest.TestCase):
         ret = executor.discover()
         print ret
         assert ret == {'balance':
-                      {'dummy':
+                      {'test_plugin':
                        ('This is a fake balance function that always '
                         'return the guid '
                         '33333333-3333-3333-3333-333333333333', '')},
                        'filters':
-                       {'dummy':
+                       {'test_plugin':
                         ('This is a simple filter that '
                          'returns all given host ID', '')},
                        'scores':
-                       {'dummy':
+                       {'test_plugin':
                         ('This is a simple score function that returns '
                          'all given host ID with score 50', '')}}
         pass

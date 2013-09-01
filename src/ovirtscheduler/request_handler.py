@@ -46,6 +46,7 @@ class RequestHandler(object):
             utils.BALANCE: self._balancers,
             utils.SCORE: self._scores
         }
+        self._class_to_module_map = {}
         self.loadModules()
 
     def loadModules(self):
@@ -61,6 +62,7 @@ class RequestHandler(object):
                 continue
             runner = PythonMethodRunner(
                 self._analyzerDir,
+                utils.LOADER_MODULE,
                 utils.LOADER_MODULE,
                 utils.LOADER_FUNC,
                 (self._pluginDir, module))
@@ -82,7 +84,7 @@ class RequestHandler(object):
             self._logger.info("loadModules::registering: %s",
                               str(runner.getResults()))
 
-            if str(runner.getErrors()):
+            if runner.getErrors():
                 self._logger.error("loadModules::External module "
                                    "failed with error - %s ",
                                    str(runner.getErrors()))
@@ -92,10 +94,11 @@ class RequestHandler(object):
 
             availableFunctions = runner.getResults()
             moduleName = availableFunctions[0]
-            for functionName, description, custom_properties_map \
+            for className, functionName, description, custom_properties_map \
                     in availableFunctions[1:]:
-                self._director[functionName][moduleName] = \
+                self._director[functionName][className] = \
                     (description, custom_properties_map)
+                self._class_to_module_map[className] = moduleName
 
         self._logger.info("loadModules::registering::loaded- "
                           "filters:" + str(self._filters) +
@@ -140,6 +143,7 @@ class RequestHandler(object):
         filterRunners = [
             PythonMethodRunner(
                 self._pluginDir,
+                self._class_to_module_map[f],
                 f,
                 utils.FILTER,
                 (hostIDs, vmID, properties_map))
@@ -192,6 +196,7 @@ class RequestHandler(object):
         scoreRunners = [
             (PythonMethodRunner(
                 self._pluginDir,
+                self._class_to_module_map[name],
                 name,
                 utils.SCORE,
                 (hostIDs, vmID, properties_map)), weight)
@@ -216,6 +221,7 @@ class RequestHandler(object):
             return
 
         runner = PythonMethodRunner(self._pluginDir,
+                                    self._class_to_module_map[balance],
                                     balance,
                                     utils.BALANCE,
                                     (hostIDs, properties_map))

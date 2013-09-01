@@ -20,15 +20,10 @@
 import subprocess
 from time import time
 
-FILTER = 'filterFunction'
-FILTER_DESCRIPTION = 'desc_filter'
-FILTER_REGEX = 'regex_filter'
-SCORE = 'scoreFunction'
-SCORE_DESCRIPTION = 'desc_score'
-SCORE_REGEX = 'regex_score'
-BALANCE = 'balanceFunction'
-BALANCE_DESCRIPTION = 'desc_balance'
-BALANCE_REGEX = 'regex_balance'
+FILTER = 'do_filter'
+SCORE = 'do_score'
+BALANCE = 'do_balance'
+REGEX = 'properties_validation'
 LOADER_MODULE = 'loader'
 LOADER_FUNC = 'analyze'
 

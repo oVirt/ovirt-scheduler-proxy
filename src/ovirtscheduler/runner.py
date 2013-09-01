@@ -25,14 +25,14 @@ import logging
 
 
 class PythonMethodRunner(Thread):
-    def __init__(self, path, module, method, args):
+    def __init__(self, path, module, cls, method, args):
         super(PythonMethodRunner, self).__init__(group=None)
         self._logger = logging.getLogger()
         self._path = path
         self._result = None
         self._error = None
         self._process = None
-        self._script = self.createScript(module, method, args)
+        self._script = self.createScript(module, cls, method, args)
 
     def run(self):
         try:
@@ -46,9 +46,14 @@ class PythonMethodRunner(Thread):
                     self._error = "PythonMethodRunner::" \
                                   "Unable to parse result: %s" \
                                   " got error : %s " % (result, ex)
-            self._error = error
+            if error:
+                self._error = error
         except Exception as ex:
             self._error = ex
+
+        if(self._error):
+            self._logger.error("PythonMethodRunner: script %s"
+                               + " got error %s", self._script, self._error)
 
     def getResults(self):
         return self._result
@@ -59,10 +64,12 @@ class PythonMethodRunner(Thread):
     def stop(self):
         return utils.killProcess(self._process)
 
-    def createScript(self, module, method, args):
-        commandTemplate = "import %(module)s; %(module)s.%(method)s%(args)s"
+    def createScript(self, module, cls, method, args):
+        commandTemplate = \
+            "import %(module)s; %(module)s.%(class)s().%(method)s%(args)s"
         commandString = commandTemplate % {
             "module": module,
+            "class": cls,
             "method": method,
             "args": repr(utils.createFunctionArgs(args))
         }

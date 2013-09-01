@@ -1,0 +1,32 @@
+Plugins are loaded from *.py files in the plugin folder.
+Each file can contain many classes, each class that has a methods named do_filter/do_score/do_balance will be registered in the engine.
+Classes should be of the form:
+
+Class Sample():
+   properties_validation = '{key1 = regex1, key2 = regex2}'
+    def __init__(self):
+        ...
+    def do_filter(self, hosts, vm, args):
+        '''
+        My filter description
+        '''
+        ...
+    def do_score(self, hosts, vm, args):
+        '''
+        My score description
+        '''
+        ...
+    def do_balance(self, hosts, args):
+        '''
+        My balance description
+        '''
+        ...
+
+(a class can have all of the methods or just some of them)
+
+If present, the method comment will be taken and presented to the engine user selecting this filter.
+
+Additionally the class can contain a member called "properties_validation" that will be used to direct the engine what values to pass to the plugin.
+This member is a string representing a map between the names of the expected args that will be passed to the filter, and the regex of possible values.
+Example: properties_validation = '{ cpu = [0-9]  }' will mean that you expect "args" to contain a key named "cpu" with values between 0 and 9
+
