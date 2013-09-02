@@ -25,26 +25,30 @@ import logging
 
 
 class PythonMethodRunner(Thread):
-    def __init__(self, path, module, cls, method, args):
+    def __init__(self, path, module, cls, method, args, request_id=''):
         super(PythonMethodRunner, self).__init__(group=None)
-        self._logger = logging.getLogger()
+        logger = logging.getLogger()
+        self._log_adapter = \
+            utils.RequestAdapter(logger,
+                                 {'method': 'PythonMethodRunner',
+                                 'request_id': request_id})
         self._path = path
         self._result = None
         self._error = None
         self._process = None
         self._script = self.createScript(module, cls, method, args)
+        self.request_id = request_id
 
     def run(self):
         try:
-            self._logger.debug('running %s in %s', self._script, self._path)
+            self._log_adapter.debug('running %s in %s' % (self._script, self._path))
             self._process = utils.createProcess(self._script, self._path)
             (result, error) = self._process.communicate()
             try:
                 self._result = literal_eval(result)
             except Exception as ex:
                 if not error:
-                    self._error = "PythonMethodRunner::" \
-                                  "Unable to parse result: %s" \
+                    self._error = "Unable to parse result: %s" \
                                   " got error : %s " % (result, ex)
             if error:
                 self._error = error
@@ -52,8 +56,8 @@ class PythonMethodRunner(Thread):
             self._error = ex
 
         if(self._error):
-            self._logger.error("PythonMethodRunner: script %s"
-                               + " got error %s", self._script, self._error)
+            self._log_adapter.error("script %s got error %s" %
+                                    (self._script, self._error))
 
     def getResults(self):
         return self._result

@@ -55,7 +55,7 @@ class ExecutorTest(unittest.TestCase):
         executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
                                   os.path.join(os.getcwd(), 'src'))
         filterRunners = []
-        assert executor.aggregate_filter_results(filterRunners) is not None
+        assert executor.aggregate_filter_results(filterRunners, '') is not None
 
     def test_aggregate_filter_results_singleNone(self):
         """
@@ -73,4 +73,4 @@ class ExecutorTest(unittest.TestCase):
                 return None
 
         filterRunners = [NoneResultRunner()]
-        assert executor.aggregate_filter_results(filterRunners) is not None
+        assert executor.aggregate_filter_results(filterRunners, '') is not None
