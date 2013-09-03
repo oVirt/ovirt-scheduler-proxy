@@ -28,10 +28,10 @@ class PythonMethodRunner(Thread):
     def __init__(self, path, module, cls, method, args, request_id=''):
         super(PythonMethodRunner, self).__init__(group=None)
         logger = logging.getLogger()
-        self._log_adapter = \
-            utils.RequestAdapter(logger,
-                                 {'method': 'PythonMethodRunner',
-                                 'request_id': request_id})
+        self._log_adapter = utils.RequestAdapter(
+            logger,
+            {'method': 'PythonMethodRunner',
+                'request_id': request_id})
         self._path = path
         self._result = None
         self._error = None
@@ -41,7 +41,8 @@ class PythonMethodRunner(Thread):
 
     def run(self):
         try:
-            self._log_adapter.debug('running %s in %s' % (self._script, self._path))
+            self._log_adapter.debug(
+                'running %s in %s' % (self._script, self._path))
             self._process = utils.createProcess(self._script, self._path)
             (result, error) = self._process.communicate()
             try:

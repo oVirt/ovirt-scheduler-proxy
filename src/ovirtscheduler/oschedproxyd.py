@@ -35,7 +35,8 @@ class SimpleThreadedXMLRPCServer(SocketServer.ThreadingMixIn,
 def setup_logging(path):
     logging.basicConfig(level=logging.DEBUG,
                         name="ovirt-scheduler-proxy",
-                        format='%(asctime)s %(levelname)-8s [process:%(processName)s,'
+                        format='%(asctime)s %(levelname)-8s' +
+                               ' [process:%(processName)s,' +
                                ' thread:%(threadName)s] %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
                         filename=path,

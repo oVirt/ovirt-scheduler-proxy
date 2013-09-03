@@ -258,7 +258,9 @@ class RequestHandler(object):
         log_adapter.info("got request: %s" % balance)
 
         if balance not in self._balancers:
-            log_adapter.warning("Load balance requested but was not found: %s", balance)
+            log_adapter.warning(
+                "Load balance requested but was not found: %s",
+                balance)
             return
 
         runner = PythonMethodRunner(self._pluginDir,
