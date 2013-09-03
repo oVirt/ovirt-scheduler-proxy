@@ -4,3 +4,8 @@
 
 # Ignore the tarballs:
 *.tar.gz
+
+# Ignore IDEA project files
+.idea
+*.iml
+

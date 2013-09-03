@@ -20,6 +20,7 @@ import SimpleXMLRPCServer
 import SocketServer
 import os
 import logging
+from logging.handlers import RotatingFileHandler
 from time import strftime
 
 
@@ -29,14 +30,18 @@ class SimpleThreadedXMLRPCServer(SocketServer.ThreadingMixIn,
 
 
 def setup_logging(path):
-    logging.basicConfig(level=logging.DEBUG,
-                        name="ovirt-scheduler-proxy",
-                        format='%(asctime)s %(levelname)-8s' +
-                               ' [process:%(processName)s,' +
-                               ' thread:%(threadName)s] %(message)s',
-                        datefmt='%a, %d %b %Y %H:%M:%S',
-                        filename=path,
-                        filemode='w')
+    file_handler = RotatingFileHandler(path,
+                                       maxBytes=50*1024,
+                                       backupCount=6)
+    log_formatter = logging.Formatter('%(asctime)s %(levelname)-8s'
+                                      ' [process:%(processName)s,'
+                                      ' thread:%(threadName)s] '
+                                      '%(message)s',
+                                      '%a, %d %b %Y %H:%M:%S')
+    file_handler.setFormatter(log_formatter)
+    logger = logging.getLogger()
+    logger.addHandler(file_handler)
+    logger.setLevel(logging.DEBUG)
 
 
 class ProxyServer(object):

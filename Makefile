@@ -15,7 +15,7 @@
 #
 
 NAME=ovirt-scheduler-proxy
-VERSION=0.1
+VERSION=0.1.2
 TARBALL=$(NAME)-$(VERSION).tar.gz
 
 tarball:
@@ -29,8 +29,12 @@ rpm: tarball
 
 all: test pep8
 
-test:
+test: pythontest javatest
+
+pythontest:
 	PYTHONPATH=src:$(PYTHONPATH) nosetests -v
+
+javatest:
 	make start;  mvn -f tests/java/pom.xml clean install; make stop
 
 pep8:
