@@ -272,4 +272,7 @@ class RequestHandler(object):
 
         log_adapter.info('returning: %s' % str(runner.getResults()))
 
-        return runner.getResults()
+        if runner.getResults() is None:
+            return ['', []]
+        else:
+            return runner.getResults()

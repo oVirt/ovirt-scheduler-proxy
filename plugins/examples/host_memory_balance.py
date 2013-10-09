@@ -14,10 +14,6 @@ class host_memory_balance(object):
     SAFE_SELECTION_DEFAULT = 'True'
     free_memory_cache = {}
 
-    def quit(self):
-        print ['', []]
-        exit()
-
     def _get_connection(self):
         #open a connection to the rest api
         connection = None
@@ -123,7 +119,7 @@ class host_memory_balance(object):
         if safe_selection is false try and take a vm larger then the amount of memory the host is missing'''
         conn = self._get_connection()
         if conn is None:
-            self.quit()
+            return
 
         #get our parameters from the map
         minimum_host_memory = long(args_map.get('minimum_host_memoryMB',
@@ -140,7 +136,7 @@ class host_memory_balance(object):
                                                          minimum_host_memory))
 
         if over_utilized_host is None:
-            self.quit()
+            return
 
         maximum_vm_memory = self.getMaximumVmMemory(under_utilized_hosts,
                                                     minimum_host_memory)
@@ -152,14 +148,14 @@ class host_memory_balance(object):
 
         host_vms = conn.vms.list('host=' + over_utilized_host.name)
         if host_vms is None:
-            self.quit()
+            return
 
         #get largest/smallest vm that will
         selected_vm = self.getBestVmForMigration(host_vms, maximum_vm_memory,
                                                  memory_delta, safe)
         # try another host?
         if selected_vm is None:
-            self.quit()
+            return
 
         under_utilized_hosts_ids = [host.id for host in under_utilized_hosts]
         print (selected_vm.id, under_utilized_hosts_ids)
