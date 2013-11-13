@@ -62,6 +62,9 @@ class PythonMethodRunner(Thread):
     def getErrors(self):
         return self._error
 
+    def getReturnCode(self):
+        return self._process.returncode
+
     def stop(self):
         return utils.killProcess(self._process)
 

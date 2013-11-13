@@ -68,5 +68,11 @@ class ExecutorTest(unittest.TestCase):
             def getResults(self):
                 return None
 
+            def getReturnCode(self):
+                return 1
+
+            def getErrors(self):
+                return None
+
         filterRunners = [NoneResultRunner()]
         assert executor.aggregate_filter_results(filterRunners, '') is not None

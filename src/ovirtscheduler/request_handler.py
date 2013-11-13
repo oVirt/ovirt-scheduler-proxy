@@ -124,17 +124,34 @@ class RequestHandler(object):
                                  {'method': 'aggregate_filter_results',
                                             'request_id': request_id})
 
-        resultSet = set()
+        resultSet = None
         for runner in filterRunners:
+
+            # if the filter fails, ignore it and continue
+            # as if it was not there
+            if runner.getReturnCode() or runner.getErrors():
+                self._logger.warn('Error in %s (errno: %d, errors: %s)',
+                                  runner._script, runner.getReturnCode(),
+                                  runner.getErrors())
+                continue
+
+            # If there is no result, skip this filter
             if runner.getResults() is None:
                 log_adapter.warning('No results from %s' % runner._script)
                 continue
+
             hosts = set(runner.getResults())
-            if not resultSet:
-                resultSet = set(hosts)
-                continue
-            resultSet = resultSet.intersection(hosts)
-        return list(resultSet)
+            if resultSet is None:
+                resultSet = hosts
+            else:
+                resultSet = resultSet.intersection(hosts)
+
+        if resultSet is None:
+            resultSet = []
+        else:
+            resultSet = list(resultSet)
+
+        return resultSet
 
     def run_filters(self, filters, hostIDs, vmID, properties_map):
         request_id = str(uuid.uuid1())
@@ -187,10 +204,18 @@ class RequestHandler(object):
 
         results = {}
         for runner, weight in scoreRunners:
+            # if the scoring function fails, ignore the result
+            if runner.getReturnCode() != 0 or runner.getErrors():
+                self._logger.warn('Error in %s (errno: %d, errors: %s)',
+                                  runner._script, runner.getReturnCode(),
+                                  runner.getErrors())
+                continue
+
             hostScores = runner.getResults()
             if hostScores is None:
                 log_adapter.warning('No results from %s' % runner._script)
                 continue
+
             for host, score in hostScores:
                 results.setdefault(host, 0)
                 results[host] += weight * score
