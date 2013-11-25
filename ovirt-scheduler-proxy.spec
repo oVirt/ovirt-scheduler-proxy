@@ -25,7 +25,7 @@
 %endif
 
 Name: ovirt-scheduler-proxy
-Version: 0.1.2
+Version: 0.1.3
 Release: 1%{?dist}
 Summary: Scheduling Proxy for Open Virtualization
 Group: Virtualization/Management
@@ -194,6 +194,13 @@ fi
 %doc LICENSE README plugins samples
 
 %changelog
+* Mon Nov 25 2013 Martin Sivak <msivak@redhat.com> - 0.1.3-1
+- Added ovirt java sdk to pom.xml for java tests
+- Better logging
+- More sample plugins
+- Failing filter plugin does not cause the result to be []
+  Resolves: rhbz#1002444
+
 * Tue Sep 10 2013 Martin Sivak <msivak@redhat.com> - 0.1.2-1
 - Added log rotation to ovirtshed daemon
 - sample plugins and files included to the package

@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='ovirt-scheduler-proxy',
-    version='0.1.2',
+    version='0.1.3',
     license='ASL2',
     description='oVirt Scheduler Proxy',
     author='Doron Fediuck',
