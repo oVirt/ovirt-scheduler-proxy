@@ -12,6 +12,7 @@ import org.junit.Test;
 public class SchedulerProxyTest {
 
     static String CLASS_NAME = "test_plugin";
+    static String FAILING_CLASS_NAME = "test_failing_plugin";
     static String HOST_ID1 = "11111111-1111-1111-1111-111111111111";
     static String HOST_ID2 = "22222222-2222-2222-2222-222222222222";
     static String[] HOST_ARRAY = new String[] { HOST_ID1, HOST_ID2 };
@@ -57,9 +58,34 @@ public class SchedulerProxyTest {
     }
 
     @Test
+    public void testFilterWithOnlyFailingPlugin() throws XmlRpcException {
+        List<String> result = proxy.filter(new String[]{ FAILING_CLASS_NAME }, HOST_ARRAY, VM_ID, "");
+        assertTrue(result.size() == HOST_ARRAY.length);
+        assertTrue(result.contains(HOST_ID1));
+        assertTrue(result.contains(HOST_ID2));
+    }
+
+    @Test
+    public void testFilterWithFailingPlugin() throws XmlRpcException {
+        List<String> result = proxy.filter(new String[]{ CLASS_NAME, FAILING_CLASS_NAME }, HOST_ARRAY, VM_ID, "");
+        assertTrue(result.size() == HOST_ARRAY.length);
+        assertTrue(result.contains(HOST_ID1));
+        assertTrue(result.contains(HOST_ID2));
+    }
+
+    @Test
     public void testScore() throws XmlRpcException {
         HashMap<String, Integer> result =
                 proxy.score(new String[] { CLASS_NAME }, new Integer[] { 2 }, HOST_ARRAY, VM_ID, "");
+        assertTrue(result.size() == 2);
+        assertTrue(result.get(HOST_ID1) == 100);
+        assertTrue(result.get(HOST_ID2) == 100);
+    }
+
+    @Test
+    public void testScoreWithFailingPlugin() throws XmlRpcException {
+        HashMap<String, Integer> result =
+                proxy.score(new String[]{ FAILING_CLASS_NAME, CLASS_NAME }, new Integer[]{ 1, 2 }, HOST_ARRAY, VM_ID, "");
         assertTrue(result.size() == 2);
         assertTrue(result.get(HOST_ID1) == 100);
         assertTrue(result.get(HOST_ID2) == 100);

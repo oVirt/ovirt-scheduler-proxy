@@ -146,9 +146,7 @@ class RequestHandler(object):
             else:
                 resultSet = resultSet.intersection(hosts)
 
-        if resultSet is None:
-            resultSet = []
-        else:
+        if resultSet is not None:
             resultSet = list(resultSet)
 
         return resultSet
@@ -192,6 +190,9 @@ class RequestHandler(object):
 
         log_adapter.debug("Aggregating results")
         results = self.aggregate_filter_results(filterRunners, request_id)
+        if results is None:
+            log_adapter.info('All filters failed, return the full list')
+            results = hostIDs
         log_adapter.info('returning: %s' % str(results))
         return results
 

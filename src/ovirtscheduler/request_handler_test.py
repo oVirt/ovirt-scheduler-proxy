@@ -28,35 +28,41 @@ class ExecutorTest(unittest.TestCase):
                                                'ovirtscheduler'))
         ret = executor.discover()
         print ret
-        assert ret == {'balance':
-                      {'test_plugin':
-                       ('This is a fake balance function that always '
-                        'return the guid '
-                        '33333333-3333-3333-3333-333333333333', '')},
-                       'filters':
-                       {'test_plugin':
-                        ('This is a simple filter that '
-                         'returns all given host ID', '')},
-                       'scores':
-                       {'test_plugin':
-                        ('This is a simple score function that returns '
-                         'all given host ID with score 50', '')}}
+        assert ret == {
+            'balance': {
+                'test_plugin': (
+                    'This is a fake balance function that always'
+                    ' return the guid'
+                    ' 33333333-3333-3333-3333-333333333333', '')},
+            'filters': {
+                'test_plugin': (
+                    'This is a simple filter that returns'
+                    ' all given host ID', ''),
+                'test_failing_plugin': ('This filter is expected to fail and'
+                                        ' should be used only in tests.', '')},
+            'scores': {
+                'test_plugin': (
+                    'This is a simple score function that'
+                    ' returns all given host ID with score'
+                    ' 50', ''),
+                'test_failing_plugin': (
+                    'This function is expected to fail and'
+                    ' should be used only in tests.', '')}}
         pass
 
     def test_aggregate_filter_results_empty(self):
         """
-        Tests if the empty filterRunners array results in an None or exception
-        in such cases the xmlrpc will fail
+        Tests if the empty filterRunners array results in None.
         """
         executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
                                   os.path.join(os.getcwd(), 'src'))
         filterRunners = []
-        assert executor.aggregate_filter_results(filterRunners, '') is not None
+        assert executor.aggregate_filter_results(filterRunners, '') is None
 
     def test_aggregate_filter_results_singleNone(self):
         """
-        Checks that the aggregate filter will not return a None or exception
-        even if the runner returns None
+        Checks that the aggregate filter will return None when
+        all runners fail.
         """
         executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
                                   os.path.join(os.getcwd(), 'src'))
@@ -75,4 +81,4 @@ class ExecutorTest(unittest.TestCase):
                 return None
 
         filterRunners = [NoneResultRunner()]
-        assert executor.aggregate_filter_results(filterRunners, '') is not None
+        assert executor.aggregate_filter_results(filterRunners, '') is None
