@@ -151,11 +151,16 @@ chkconfig --add ovirt-scheduler-proxy
 
 
 %postun
-
 # Make sure that the service is stoped and removed from the systemd
 # configuration:
 %if %{install_systemd}
 %systemd_postun ovirt-scheduler-proxy.service
+%endif
+
+%preun
+# Make sure that the service is stoped
+%if %{install_systemd}
+%systemd_preun ovirt-scheduler-proxy.service
 %endif
 
 # Stop the SysV service only if the package is being completely
