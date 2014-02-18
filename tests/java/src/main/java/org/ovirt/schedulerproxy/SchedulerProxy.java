@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
@@ -12,6 +13,7 @@ import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 
 public class SchedulerProxy {
     final XmlRpcClient client;
+    private final int RESULT_OK = 0;
 
     public SchedulerProxy(String url) throws MalformedURLException {
         XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
@@ -21,10 +23,56 @@ public class SchedulerProxy {
     }
 
     public HashMap<String, HashMap<String, String[]>> discover() throws XmlRpcException {
-        Object execute = client.execute("discover", new Object[] {});
+        Object execute = client.execute("discover", new Object[]{});
         return parseDiscover(execute);
     }
 
+    private Object parseRawResult(Object xmlRpcStruct, SchedulerResult result) {
+        /* new response format
+        {
+          "result_code": int,
+          "result": [list of UUIDS],
+          "plugin_errors": { "plugin_name": ["errormsgs"] },
+          "errors": ["errormsgs"]
+        }
+        */
+
+        if (!(xmlRpcStruct instanceof HashMap)) {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> castedResult = (HashMap<String, Object>) xmlRpcStruct;
+
+        // keys will be status_code, plugin_errors, errors and result
+        result.setResultCode((Integer) castedResult.get("result_code"));
+        Map<String, Object[]> plugin_errors = null;
+        Object[] errors = null;
+
+        if (result.getResultCode() != RESULT_OK) {
+            plugin_errors = (HashMap<String, Object[]>)castedResult.get("plugin_errors");
+            errors = (Object[])castedResult.get("errors");
+
+            if (plugin_errors != null) {
+                for (Map.Entry<String, Object[]> entry: plugin_errors.entrySet()) {
+                    for (Object errorMsg: entry.getValue()) {
+                        result.addPluginErrors(entry.getKey(), errorMsg.toString());
+                    }
+                }
+            }
+
+            if (errors != null) {
+                for (Object msg: errors) {
+                    result.addError((String)msg);
+                }
+            }
+        }
+
+        /* returns just result without any headers
+           so it can be passed to the old parsers
+         */
+        return castedResult.get("result");
+    }
     private HashMap<String, HashMap<String, String[]>> parseDiscover(Object result) {
         if (result == null || !(result instanceof HashMap)) {
             System.out.println("discover error");
@@ -48,7 +96,7 @@ public class SchedulerProxy {
         return retValue;
     }
 
-    public List<String> filter(String[] filterNames, String[] HostID, String vmID, String args) throws XmlRpcException {
+    public FilteringResult filter(String[] filterNames, String[] HostID, String vmID, String args) throws XmlRpcException {
         Object[] sentObject = new Object[4];
         // filters name
         sentObject[0] = filterNames;
@@ -63,20 +111,22 @@ public class SchedulerProxy {
         return parseFilterResult(execute);
     }
 
-    private List<String> parseFilterResult(Object result) {
-        if (result == null || !(result instanceof Object[])) {
-            System.out.println("Filter error");
+    private FilteringResult parseFilterResult(Object xmlRpcStruct) {
+        FilteringResult retValue = new FilteringResult();
+        Object rawResult = parseRawResult(xmlRpcStruct, retValue);
+        if (rawResult == null) {
+            System.out.println("filter error");
             return null;
         }
+
         // Its a list of host IDs
-        List<String> retValue = new LinkedList<String>();
-        for (Object hostID : (Object[]) result) {
-            retValue.add(hostID.toString());
+        for (Object hostID : (Object[]) rawResult) {
+            retValue.addHost(hostID.toString());
         }
         return retValue;
     }
 
-    public HashMap<String, Integer> score(String[] scoreNames,
+    public ScoringResult score(String[] scoreNames,
             Integer[] weights,
             String[] HostID,
             String vmID,
@@ -105,25 +155,29 @@ public class SchedulerProxy {
         return parseScoreResults(execute);
     }
 
-    private HashMap<String, Integer> parseScoreResults(Object result) {
-        if (result == null || !(result instanceof Object[])) {
+    private ScoringResult parseScoreResults(Object xmlRpcStruct) {
+        ScoringResult result = new ScoringResult();
+        Object rawResults = parseRawResult(xmlRpcStruct, result);
+        if (rawResults == null) {
             System.out.println("Score error");
+            return null;
         }
+
         HashMap<String, Integer> retValue = new HashMap<String, Integer>();
         // Its a list of (hostID,score) pairs
-        for (Object hostsIDAndScore : (Object[]) result) {
+        for (Object hostsIDAndScore : (Object[]) rawResults) {
             if (!(hostsIDAndScore instanceof Object[]) || ((Object[]) hostsIDAndScore).length != 2) {
                 // some kind of error
                 System.out.println("Got bad score");
                 return null;
             }
             Object[] castedHostsIDAndScore = (Object[]) hostsIDAndScore;
-            retValue.put(castedHostsIDAndScore[0].toString(), (Integer) castedHostsIDAndScore[1]);
+            result.addHost(castedHostsIDAndScore[0].toString(), (Integer) castedHostsIDAndScore[1]);
         }
-        return retValue;
+        return result;
     }
 
-    public HashMap<String, List<String>> balance(String balanceName, String[] HostID, String args)
+    public BalanceResult balance(String balanceName, String[] HostID, String args)
             throws XmlRpcException {
         Object[] sentObject = new Object[3];
         // balance name
@@ -137,17 +191,19 @@ public class SchedulerProxy {
         return parseBalanceResults(execute);
     }
 
-    private HashMap<String, List<String>> parseBalanceResults(Object result) {
-        if (result == null || !(result instanceof Object[])) {
+    private BalanceResult parseBalanceResults(Object xmlRpcStruct) {
+        BalanceResult result = new BalanceResult();
+        Object rawResults = parseRawResult(xmlRpcStruct, result);
+        if (xmlRpcStruct == null) {
             System.out.println("balance error");
+            return null;
         }
-        Object[] castedResult = (Object[]) result;
+        Object[] castedResult = (Object[]) rawResults;
         HashMap<String, List<String>> retValue = new HashMap<String, List<String>>();
-        List<String> hostIDs = new LinkedList<String>();
         for (Object hostID : (Object[]) castedResult[1]) {
-            hostIDs.add(hostID.toString());
+            result.addHost(hostID.toString());
         }
-        retValue.put(castedResult[0].toString(), hostIDs);
-        return retValue;
+        result.setVmToMigrate(castedResult[0].toString());
+        return result;
     }
 }

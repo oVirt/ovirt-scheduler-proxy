@@ -28,21 +28,24 @@ class API(object):
         return self._plugin_executor.discover()
 
     def runFilters(self, filters, hosts, vm, properties_map):
+        # we use custom class as a return value, which won't be
+        # serialized properly, so we need to call to_dict on it,
+        # to get the right format
         return self._plugin_executor.run_filters(
             filters,
             hosts,
             vm,
-            properties_map)
+            properties_map).to_dict()
 
     def runCostFunctions(self, cost_functions, hosts, vm, properties_map):
         return self._plugin_executor.run_cost_functions(
             cost_functions,
             hosts,
             vm,
-            properties_map)
+            properties_map).to_dict()
 
     def runLoadBalancing(self, balance, hosts, properties_map):
         return self._plugin_executor.run_load_balancing(
             balance,
             hosts,
-            properties_map)
+            properties_map).to_dict()

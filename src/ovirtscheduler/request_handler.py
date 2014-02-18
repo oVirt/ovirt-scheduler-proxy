@@ -19,6 +19,7 @@ from runner import PythonMethodRunner
 import utils
 import logging
 import uuid
+from result import Result
 
 
 class RequestHandler(object):
@@ -152,6 +153,7 @@ class RequestHandler(object):
         return resultSet
 
     def run_filters(self, filters, hostIDs, vmID, properties_map):
+        result = Result()
         request_id = str(uuid.uuid1())
         log_adapter = \
             utils.RequestAdapter(self._logger,
@@ -166,7 +168,7 @@ class RequestHandler(object):
         # handle missing filters
         for f in missing_f:
             log_adapter.warning("Filter requested but was not found: %s" % f)
-            raise RuntimeError("plugin not found: " + f)
+            result.pluginError(f, "plugin not found: '%s'" % f)
 
         # Prepare a generator "list" of runners
         filterRunners = [
@@ -189,12 +191,17 @@ class RequestHandler(object):
             log_adapter.warning("Waiting on filters timed out")
 
         log_adapter.debug("Aggregating results")
-        results = self.aggregate_filter_results(filterRunners, request_id)
-        if results is None:
+        filters_results = self.aggregate_filter_results(filterRunners,
+                                                        request_id)
+        if filters_results is None:
             log_adapter.info('All filters failed, return the full list')
-            results = hostIDs
-        log_adapter.info('returning: %s' % str(results))
-        return results
+            result.error("all filters failed")
+            filters_results = hostIDs
+
+        result.add(filters_results)
+        log_adapter.info('returning: %s' % str(filters_results))
+
+        return result
 
     #accumalate the results
     def aggregate_score_results(self, scoreRunners, request_id):
@@ -228,6 +235,7 @@ class RequestHandler(object):
                            hostIDs,
                            vmID,
                            properties_map):
+        result = Result()
         request_id = str(uuid.uuid1())
         log_adapter = \
             utils.RequestAdapter(self._logger,
@@ -244,6 +252,7 @@ class RequestHandler(object):
         # Report the unknown functions
         for name, weight in missing_cost_f:
                 log_adapter.warning("requested but was not found: %s" % name)
+                result.pluginError(name, "plugin not found: '%s'" % name)
 
         # Prepare a generator "list" with runners and weights
         scoreRunners = [
@@ -263,13 +272,16 @@ class RequestHandler(object):
         log_adapter.debug("Waiting for scoring to finish")
         if utils.waitOnGroup([runner for runner, _weight in scoreRunners]):
             log_adapter.warning("Waiting on score functions timed out")
+            result.error("Waiting on score functions timed out")
 
         log_adapter.debug("Aggregating results")
         results = self.aggregate_score_results(scoreRunners, request_id)
+        result.add(results)
         log_adapter.info('returning: %s' % str(results))
-        return results
+        return result
 
     def run_load_balancing(self, balance, hostIDs, properties_map):
+        result = Result()
         request_id = str(uuid.uuid1())
         log_adapter = \
             utils.RequestAdapter(self._logger,
@@ -279,10 +291,11 @@ class RequestHandler(object):
         log_adapter.info("got request: %s" % balance)
 
         if balance not in self._balancers:
-            log_adapter.warning(
-                "Load balance requested but was not found: %s",
-                balance)
-            return
+            warn_message = "Load balance requested but was not found: %s"\
+                           % balance
+            log_adapter.warning(warn_message)
+            result.pluginError(balance, warn_message)
+            return result
 
         runner = PythonMethodRunner(self._pluginDir,
                                     self._class_to_module_map[balance],
@@ -299,6 +312,8 @@ class RequestHandler(object):
         log_adapter.info('returning: %s' % str(runner.getResults()))
 
         if runner.getResults() is None:
-            return ['', []]
+            result.add(['', []])
         else:
-            return runner.getResults()
+            result.add(runner.getResults())
+
+        return result

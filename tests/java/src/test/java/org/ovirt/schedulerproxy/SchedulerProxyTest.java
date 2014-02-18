@@ -1,9 +1,11 @@
 package org.ovirt.schedulerproxy;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.junit.Before;
@@ -46,20 +48,23 @@ public class SchedulerProxyTest {
 
     @Test
     public void testFilter() throws XmlRpcException {
-        List<String> result = proxy.filter(new String[] { CLASS_NAME }, HOST_ARRAY, VM_ID, "");
+        List<String> result = proxy.filter(new String[] { CLASS_NAME }, HOST_ARRAY, VM_ID, "").getHosts();
         assertTrue(result.size() == HOST_ARRAY.length);
         assertTrue(result.contains(HOST_ID1));
         assertTrue(result.contains(HOST_ID2));
     }
 
-    @Test(expected = XmlRpcException.class)
-    public void testFilterWithNotExistingPLugin() throws XmlRpcException {
-        proxy.filter(new String[] { "NOTEXISTINGPLUGIN-" + System.currentTimeMillis() }, HOST_ARRAY, VM_ID, "");
+    @Test
+    public void testFilterWithNotExistingPlugin() throws XmlRpcException {
+        String notExistingPluginName = "NOTEXISTINGPLUGIN-" + System.currentTimeMillis();
+        FilteringResult result = proxy.filter(new String[] { notExistingPluginName }, HOST_ARRAY, VM_ID, "");
+        assertTrue(result.getPluginErrors().containsKey(notExistingPluginName));
+        assertTrue(result.getResultCode() != 0);
     }
 
     @Test
     public void testFilterWithOnlyFailingPlugin() throws XmlRpcException {
-        List<String> result = proxy.filter(new String[]{ FAILING_CLASS_NAME }, HOST_ARRAY, VM_ID, "");
+        List<String> result = proxy.filter(new String[]{ FAILING_CLASS_NAME }, HOST_ARRAY, VM_ID, "").getHosts();
         assertTrue(result.size() == HOST_ARRAY.length);
         assertTrue(result.contains(HOST_ID1));
         assertTrue(result.contains(HOST_ID2));
@@ -67,7 +72,7 @@ public class SchedulerProxyTest {
 
     @Test
     public void testFilterWithFailingPlugin() throws XmlRpcException {
-        List<String> result = proxy.filter(new String[]{ CLASS_NAME, FAILING_CLASS_NAME }, HOST_ARRAY, VM_ID, "");
+        List<String> result = proxy.filter(new String[]{ CLASS_NAME, FAILING_CLASS_NAME }, HOST_ARRAY, VM_ID, "").getHosts();
         assertTrue(result.size() == HOST_ARRAY.length);
         assertTrue(result.contains(HOST_ID1));
         assertTrue(result.contains(HOST_ID2));
@@ -76,7 +81,7 @@ public class SchedulerProxyTest {
     @Test
     public void testScore() throws XmlRpcException {
         HashMap<String, Integer> result =
-                proxy.score(new String[] { CLASS_NAME }, new Integer[] { 2 }, HOST_ARRAY, VM_ID, "");
+                proxy.score(new String[] { CLASS_NAME }, new Integer[] { 2 }, HOST_ARRAY, VM_ID, "").getHosts();
         assertTrue(result.size() == 2);
         assertTrue(result.get(HOST_ID1) == 100);
         assertTrue(result.get(HOST_ID2) == 100);
@@ -85,7 +90,7 @@ public class SchedulerProxyTest {
     @Test
     public void testScoreWithFailingPlugin() throws XmlRpcException {
         HashMap<String, Integer> result =
-                proxy.score(new String[]{ FAILING_CLASS_NAME, CLASS_NAME }, new Integer[]{ 1, 2 }, HOST_ARRAY, VM_ID, "");
+                proxy.score(new String[]{ FAILING_CLASS_NAME, CLASS_NAME }, new Integer[]{ 1, 2 }, HOST_ARRAY, VM_ID, "").getHosts();
         assertTrue(result.size() == 2);
         assertTrue(result.get(HOST_ID1) == 100);
         assertTrue(result.get(HOST_ID2) == 100);
@@ -93,7 +98,7 @@ public class SchedulerProxyTest {
 
     @Test
     public void testBalance() throws XmlRpcException {
-        HashMap<String, List<String>> result = proxy.balance(CLASS_NAME, HOST_ARRAY, "");
+        Map<String, List<String>> result = proxy.balance(CLASS_NAME, HOST_ARRAY, "").getResult();
         assertTrue(result.containsKey(VM_ID));
         assertTrue(result.get(VM_ID).contains(HOST_ID1));
     }
