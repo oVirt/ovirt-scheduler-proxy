@@ -18,6 +18,7 @@ from API import API
 from request_handler import RequestHandler
 import SimpleXMLRPCServer
 import SocketServer
+import sys
 import os
 import logging
 from logging.handlers import RotatingFileHandler
@@ -27,6 +28,16 @@ from time import strftime
 class SimpleThreadedXMLRPCServer(SocketServer.ThreadingMixIn,
                                  SimpleXMLRPCServer.SimpleXMLRPCServer):
     pass
+
+
+class XMLPRPCRequestHandler(SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
+
+    if sys.version_info[:2] == (2, 6):
+        # Override BaseHTTPServer.BaseRequestHandler implementation to avoid
+        # pointless and slow attempt to get the fully qualified host name from
+        # the client address. This method is not used any more in Python 2.7.
+        def address_string(self):
+            return self.client_address[0]
 
 
 def setup_logging(path):
@@ -55,8 +66,10 @@ class ProxyServer(object):
 
     def setup(self):
         logging.info("Setting up server")
-        self._server = SimpleThreadedXMLRPCServer(("localhost", 18781),
-                                                  allow_none=True)
+        self._server = SimpleThreadedXMLRPCServer(
+            ("localhost", 18781),
+            allow_none=True,
+            requestHandler=XMLPRPCRequestHandler)
 
         analyzer_path = os.path.dirname(__file__)
 
