@@ -22,8 +22,12 @@ import os
 
 class ExecutorTest(unittest.TestCase):
 
+    def setUp(self):
+        self.plugin_path = os.environ.get("OSCHEDPROXY_PLUGINS",
+                                          os.path.join(os.getcwd(), 'plugins'))
+
     def test_discover(self):
-        executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
+        executor = RequestHandler(self.plugin_path,
                                   os.path.join(os.getcwd(), 'src',
                                                'ovirtscheduler'))
         ret = executor.discover()
@@ -54,7 +58,7 @@ class ExecutorTest(unittest.TestCase):
         """
         Tests if the empty filterRunners array results in None.
         """
-        executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
+        executor = RequestHandler(self.plugin_path,
                                   os.path.join(os.getcwd(), 'src'))
         filterRunners = []
         assert executor.aggregate_filter_results(filterRunners, '') is None
@@ -64,7 +68,7 @@ class ExecutorTest(unittest.TestCase):
         Checks that the aggregate filter will return None when
         all runners fail.
         """
-        executor = RequestHandler(os.path.join(os.getcwd(), 'plugins'),
+        executor = RequestHandler(self.plugin_path,
                                   os.path.join(os.getcwd(), 'src'))
 
         class NoneResultRunner:

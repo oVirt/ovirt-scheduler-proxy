@@ -45,24 +45,26 @@ def setup_logging(path):
 
 
 class ProxyServer(object):
-    def __init__(self):
+    def __init__(self, plugin_path=None):
         self._server = None
         self._handler = None
+        if plugin_path is None:
+            self._plugin_path = os.path.join(os.getcwd(), "plugins")
+        else:
+            self._plugin_path = plugin_path
 
     def setup(self):
         logging.info("Setting up server")
         self._server = SimpleThreadedXMLRPCServer(("localhost", 18781),
                                                   allow_none=True)
 
-        # TODO make by config
-        plugins_path = os.path.join(os.getcwd(), "plugins")
         analyzer_path = os.path.dirname(__file__)
 
-        logging.info("Loading modules from %s" % plugins_path)
+        logging.info("Loading modules from %s" % self._plugin_path)
         logging.info("Loading analyzer from %s" % analyzer_path)
 
         self._handler = RequestHandler(
-            plugins_path,
+            self._plugin_path,
             analyzer_path)
 
     def run(self):
@@ -74,7 +76,7 @@ class ProxyServer(object):
 
 #for test runs
 def main():
-    server = ProxyServer()
+    server = ProxyServer(os.environ.get("OSCHEDPROXY_PLUGINS", None))
     server.setup()
     server.run()
 

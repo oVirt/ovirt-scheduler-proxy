@@ -21,10 +21,12 @@ import os
 
 
 class RunnerTest(unittest.TestCase):
+    def setUp(self):
+        self.plugin_path = os.environ.get("OSCHEDPROXY_PLUGINS",
+                                          os.path.join(os.getcwd(), 'plugins'))
+
     def test_with_dummy(self):
-        scriptpath = os.path.join(os.getcwd(),
-                                  'plugins')
-        runner = PythonMethodRunner(scriptpath,
+        runner = PythonMethodRunner(self.plugin_path,
                                     'test_plugin',
                                     'test_plugin',
                                     'do_filter',

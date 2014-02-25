@@ -15,11 +15,19 @@
 #
 
 NAME=ovirt-scheduler-proxy
-VERSION=0.1.3
+VERSION=$(shell cat VERSION)
 TARBALL=$(NAME)-$(VERSION).tar.gz
 
-tarball:
-	tar --xform='s,^,$(NAME)-$(VERSION)/,' -c -z -f $(TARBALL) `git ls-files`
+all: test pep8
+
+$(NAME).spec: $(NAME).spec.in VERSION
+	sed -e 's/{VERSION}/$(VERSION)/g' $< >$@
+
+tarball: $(NAME).spec VERSION
+	tar --xform='s,^,$(NAME)-$(VERSION)/,' -c -z -f $(TARBALL) `git ls-files` $(NAME).spec
+
+tag:
+	git tag $(VERSION)
 
 srpm: tarball
 	rpmbuild -ts $(TARBALL)
@@ -27,21 +35,19 @@ srpm: tarball
 rpm: tarball
 	rpmbuild -tb $(TARBALL)
 
-all: test pep8
-
 test: pythontest javatest
 
 pythontest:
-	PYTHONPATH=src:$(PYTHONPATH) nosetests -v
+	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins PYTHONPATH=src:$(PYTHONPATH) nosetests -v
 
 javatest:
-	make start;  mvn -f tests/java/pom.xml clean install; make stop
+	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins make start;  mvn -f tests/java/pom.xml clean install; make stop
 
 pep8:
 	pep8 src
 
 start:
-	python src/ovirtscheduler/oschedproxyd.py &
+	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins python src/ovirtscheduler/oschedproxyd.py &
 
 stop:
 	pkill -f "python src/ovirtscheduler/oschedproxyd.py"
@@ -52,3 +58,4 @@ clean:
 restart:
 	$(MAKE) stop
 	$(MAKE) start
+
