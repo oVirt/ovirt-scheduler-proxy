@@ -15,24 +15,56 @@
 #
 
 NAME=ovirt-scheduler-proxy
-VERSION=$(shell cat VERSION)
+VERSION=$(shell cat VERSION | tr -d '\n')
+LASTVERSION=$(shell git describe --match='[[:digit:]].[[:digit:]].[[:digit:]]*' --abbrev=0 --tags | tr -d '\n' | sed 's/-/.0./' | tr - .)
+GITVER=$(shell git describe  --match='[[:digit:]].[[:digit:]].[[:digit:]]*' --tags | sed 's/-/.0./' | tr - .)
 TARBALL=$(NAME)-$(VERSION).tar.gz
+
+AUTHOR=$(shell git config user.name)
+EMAIL=$(shell git config user.email)
 
 all: test pep8
 
-$(NAME).spec: $(NAME).spec.in VERSION
-	sed -e 's/{VERSION}/$(VERSION)/g' $< >$@
+version:
+	if [ "x$(GITVER)" != "x" ]; then echo -ne "$(GITVER)" > VERSION; fi
 
-tarball: $(NAME).spec VERSION
+$(NAME).spec: VERSION $(NAME).spec.in
+	sed -e 's/{VERSION}/$(VERSION)/g' $(NAME).spec.in >$@
+
+tarball: version $(TARBALL)
+
+$(TARBALL): VERSION $(NAME).spec
 	tar --xform='s,^,$(NAME)-$(VERSION)/,' -c -z -f $(TARBALL) `git ls-files` $(NAME).spec
+
+bumpver:
+	@build-aux/bumpver.sh "$(LASTVERSION)" >VERSION
+	@echo "Version bumped from $(LASTVERSION) to $(VERSION)"
 
 tag:
 	git tag $(VERSION)
 
-srpm: tarball
+changelog:
+	@if grep '$(VERSION)-1' $(NAME).spec.in; then true; else \
+	echo "Create a changelog entry first:" && \
+	echo "* $(shell LANG=C date +"%a %b %d %Y") $(AUTHOR) <$(EMAIL)> $(VERSION)-1" && \
+	false; fi
+
+release: checkclean bumpver all changelog commit tag $(TARBALL)
+	@echo "Release $(VERSION) created successfully."
+	@echo "Push using git push origin HEAD:refs/for/master"
+	@echo "Once reviewed push tags using git push $(VERSION)"
+
+checkclean:
+	@echo "Checking if there are no uncommited changes..."
+	@if git status --porcelain | egrep -v "^( M VERSION| M $(NAME).spec.in)" | egrep -v "^\\?\\?"; then false; else true; fi
+
+commit:
+	git commit -a -m "Release of version $(VERSION)"
+
+srpm: version tarball
 	rpmbuild -ts $(TARBALL)
 
-rpm: tarball
+rpm: version tarball
 	rpmbuild -tb $(TARBALL)
 
 test: pythontest javatest
@@ -58,4 +90,6 @@ clean:
 restart:
 	$(MAKE) stop
 	$(MAKE) start
+
+.PHONY: checkclean commit version bumpver release all test pythontest javatest start stop pep8 clean restart rpm srpm tag tarball
 
