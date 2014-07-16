@@ -160,7 +160,7 @@ class RequestHandler(object):
                                  {'method': 'run_filters',
                                             'request_id': request_id})
 
-        #run each filter in a process for robustness
+        # run each filter in a process for robustness
         log_adapter.info("got request: %s" % str(filters))
         avail_f, missing_f = utils.partition(filters,
                                              lambda f: f in self._filters)
@@ -186,7 +186,7 @@ class RequestHandler(object):
             runner.start()
 
         log_adapter.debug("Waiting for filters to finish")
-        #TODO add timeout config
+        # TODO add timeout config
         if utils.waitOnGroup(filterRunners):
             log_adapter.warning("Waiting on filters timed out")
 
@@ -203,7 +203,7 @@ class RequestHandler(object):
 
         return result
 
-    #accumalate the results
+    # accumalate the results
     def aggregate_score_results(self, scoreRunners, request_id):
         log_adapter = \
             utils.RequestAdapter(self._logger,
@@ -242,7 +242,7 @@ class RequestHandler(object):
                                  {'method': 'run_cost_functions',
                                             'request_id': request_id})
 
-        #run each filter in a process for robustness
+        # run each filter in a process for robustness
         log_adapter.info("got request: %s" % str(cost_functions))
 
         # Get the list of known and unknown score functions

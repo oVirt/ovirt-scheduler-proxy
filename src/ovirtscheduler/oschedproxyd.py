@@ -87,7 +87,7 @@ class ProxyServer(object):
         self._server.serve_forever()
 
 
-#for test runs
+# for test runs
 def main():
     server = ProxyServer(os.environ.get("OSCHEDPROXY_PLUGINS", None))
     server.setup()

@@ -30,7 +30,7 @@ def createProcess(script, runLocation=None):
     """
         Creates a process from script
     """
-    #script should be a list and not a string
+    # script should be a list and not a string
     if isinstance(script, basestring):
         script = [script]
     process = subprocess.Popen(script,
@@ -71,7 +71,7 @@ def waitOnGroup(runners, timeout=30):
             timedOut = True
             break
         runner.join(timeLeft)
-    #Make sure we dont have dangling processes
+    # Make sure we dont have dangling processes
     for runner in runners:
         runner.stop()
 
