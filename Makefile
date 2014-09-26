@@ -31,6 +31,8 @@ version:
 $(NAME).spec: VERSION $(NAME).spec.in
 	sed -e 's/{VERSION}/$(VERSION)/g' $(NAME).spec.in >$@
 
+dist: tarball
+
 tarball: version $(TARBALL)
 
 $(TARBALL): VERSION $(NAME).spec
