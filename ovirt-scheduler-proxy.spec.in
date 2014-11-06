@@ -1,5 +1,5 @@
 #
-# Copyright 2013 Red Hat, Inc.
+# Copyright 2013-2014 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,8 +20,13 @@
 %endif
 
 %if 0%{?rhel}
+%if 0%{?rhel} >= 7
+%global install_systemd 1
+%global install_systemv 0
+%else
 %global install_systemd 0
 %global install_systemv 1
+%endif
 %endif
 
 Name: ovirt-scheduler-proxy
