@@ -1,0 +1,5 @@
+make
+git
+systemd
+python2-devel
+python-nose
