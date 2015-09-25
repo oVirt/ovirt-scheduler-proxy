@@ -3,3 +3,5 @@ git
 systemd
 python2-devel
 python-nose
+procps-ng
+python-pep8
