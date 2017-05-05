@@ -67,13 +67,20 @@ def waitOnGroup(runners, timeout=30):
     expireTime = time() + timeout
     for runner in runners:
         timeLeft = expireTime - time()
-        if timeLeft < 0:
+        runner.join(max(timeLeft, 0.0))
+
+        # check if the join timed out and the thread is still running
+        if runner.is_alive():
             timedOut = True
             break
-        runner.join(timeLeft)
+
     # Make sure we dont have dangling processes
     for runner in runners:
         runner.stop()
+
+    # Wait for threads to finish and store the return code and error
+    for runner in runners:
+        runner.join(5.0)
 
     return timedOut
 
