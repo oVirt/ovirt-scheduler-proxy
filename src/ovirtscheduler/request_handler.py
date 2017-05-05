@@ -131,9 +131,10 @@ class RequestHandler(object):
             # if the filter fails, ignore it and continue
             # as if it was not there
             if runner.getReturnCode() or runner.getErrors():
-                self._logger.warn('Error in %s (errno: %d, errors: %s)',
-                                  runner._script, runner.getReturnCode(),
-                                  runner.getErrors())
+                log_adapter.warning('Error in %s (errno: %d, errors: %s)',
+                                    runner._script,
+                                    runner.getReturnCode(),
+                                    runner.getErrors())
                 continue
 
             # If there is no result, skip this filter
@@ -214,9 +215,10 @@ class RequestHandler(object):
         for runner, weight in scoreRunners:
             # if the scoring function fails, ignore the result
             if runner.getReturnCode() != 0 or runner.getErrors():
-                self._logger.warn('Error in %s (errno: %d, errors: %s)',
-                                  runner._script, runner.getReturnCode(),
-                                  runner.getErrors())
+                log_adapter.warning('Error in %s (errno: %d, errors: %s)',
+                                    runner._script,
+                                    runner.getReturnCode(),
+                                    runner.getErrors())
                 continue
 
             hostScores = runner.getResults()
