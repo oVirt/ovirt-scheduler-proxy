@@ -204,6 +204,10 @@ fi
 %doc LICENSE README doc/*
 
 %changelog
+* Thu Jun 08 2017 Martin Sivak <msivak@redhat.com> 0.1.7-1
+- Fix timeout and forced stop of scheduler methods
+  Resolves: rhbz#1444611
+
 * Wed Jan 21 2015 Martin Sivak <msivak@redhat.com> 0.1.6-1
 - Support RHEL7 build environment
   Resolves: rhbz#1159293
