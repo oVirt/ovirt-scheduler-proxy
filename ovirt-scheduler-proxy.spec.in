@@ -31,7 +31,7 @@
 
 Name: ovirt-scheduler-proxy
 Version: {VERSION}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Scheduling Proxy for Open Virtualization
 Group: Virtualization/Management
 License: ASL 2.0
@@ -40,10 +40,10 @@ URL: http://www.ovirt.org
 # The source is tracked by git, please use the following to get the tarball
 # git clone git://gerrit.ovirt.org/ovirt-scheduler-proxy.git
 # cd ovirt-scheduler-proxy
-# git checkout %{version}
+# git checkout %%{version}
 # make tarball
 # Some releases can also be downloaded from
-# http://ovirt.org/releases/stable/src/%{name}-%{version}.tar.gz
+# http://ovirt.org/releases/stable/src/%%{name}-%%{version}.tar.gz
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
 
@@ -71,14 +71,14 @@ load-balancing of their oVirt system.
 rm -rf tests/java
 
 %build
-%{__python} setup.py \
+%{__python2} setup.py \
     build
 
 
 %install
 
 # Install the python files:
-%{__python} setup.py \
+%{__python2} setup.py \
     install \
     -O1 \
     --skip-build \
@@ -186,8 +186,8 @@ fi
 %files
 
 # Python files (included the generated egg):
-%{python_sitelib}/ovirtscheduler
-%{python_sitelib}/ovirt_scheduler_proxy-*.egg-info
+%{python2_sitelib}/ovirtscheduler
+%{python2_sitelib}/ovirt_scheduler_proxy-*.egg-info
 
 # Systemd and SysV files:
 %if %{install_systemd}
@@ -208,6 +208,9 @@ fi
 %doc LICENSE README doc/*
 
 %changelog
+* Tue May 28 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.1.8-2
+- Fix spec file for Fedora 29 compatibility
+
 * Thu Nov 09 2017 Andrej Krejcir <akrejcir@redhat.com> 0.1.8-1
 - Fix installation errors on CentOS 7.4
   Resolves: rhbz#1494390
