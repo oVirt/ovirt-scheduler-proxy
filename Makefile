@@ -81,10 +81,10 @@ pep8:
 	pep8 src
 
 start:
-	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins python src/ovirtscheduler/oschedproxyd.py &
+	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins python2 src/ovirtscheduler/oschedproxyd.py &
 
 stop:
-	pkill -f "python src/ovirtscheduler/oschedproxyd.py"
+	pkill -f "python2 src/ovirtscheduler/oschedproxyd.py"
 
 clean:
 	find -name '*.pyc' -exec rm {} \;

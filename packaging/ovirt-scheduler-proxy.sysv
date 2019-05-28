@@ -29,7 +29,7 @@ start)
     pushd "/usr/share/${name}" &>/dev/null
         daemon \
             --user=ovirt \
-            "python -m ovirtscheduler.oschedproxyd &>/var/log/${name}/console.log & echo \$! >${pidfile}"
+            "python2 -m ovirtscheduler.oschedproxyd &>/var/log/${name}/console.log & echo \$! >${pidfile}"
     popd &>/dev/null
     retval=$?
     echo

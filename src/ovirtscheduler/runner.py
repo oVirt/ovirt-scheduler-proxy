@@ -78,4 +78,4 @@ class PythonMethodRunner(Thread):
             "args": repr(utils.createFunctionArgs(args))
         }
 
-        return ["python", "-c", commandString]
+        return ["python2", "-c", commandString]

@@ -7,7 +7,7 @@ Type=simple
 User=ovirt
 Group=ovirt
 WorkingDirectory=/usr/share/ovirt-scheduler-proxy
-ExecStart=/usr/bin/python -m ovirtscheduler.oschedproxyd
+ExecStart=/usr/bin/python2 -m ovirtscheduler.oschedproxyd
 EnvironmentFile=-/etc/sysconfig/ovirt-scheduler-proxy
 
 [Install]
