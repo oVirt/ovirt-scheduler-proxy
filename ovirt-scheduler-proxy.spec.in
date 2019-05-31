@@ -53,6 +53,8 @@ BuildRequires: systemd
 
 BuildRequires: python2-devel
 BuildRequires: python-nose
+BuildRequires: maven
+BuildRequires: java-1.8.0-openjdk-devel
 
 Requires: python
 

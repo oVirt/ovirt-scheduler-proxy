@@ -1,5 +1,7 @@
 make
 git
 systemd
+maven
 python2-devel
 python-nose
+java-1.8.0-openjdk-devel
