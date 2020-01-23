@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
+import os
 import unittest
 
 from request_handler import RequestHandler
-import os
 
 
 class ExecutorTest(unittest.TestCase):
@@ -31,7 +31,7 @@ class ExecutorTest(unittest.TestCase):
                                   os.path.join(os.getcwd(), 'src',
                                                'ovirtscheduler'))
         ret = executor.discover()
-        print ret
+        print(ret)
         assert ret == {
             'balance': {
                 'test_plugin': (

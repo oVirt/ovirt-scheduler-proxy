@@ -14,9 +14,11 @@
 # limitations under the License.
 #
 
-import subprocess
-from time import time
+
 import logging
+import subprocess
+from functools import reduce
+from time import time
 
 FILTER = 'do_filter'
 SCORE = 'do_score'
@@ -31,7 +33,7 @@ def createProcess(script, runLocation=None):
         Creates a process from script
     """
     # script should be a list and not a string
-    if isinstance(script, basestring):
+    if isinstance(script, str):
         script = [script]
     process = subprocess.Popen(script,
                                stdin=subprocess.PIPE,
@@ -92,7 +94,7 @@ def createFunctionArgs(args):
     """
     if args is None:
         return tuple()
-    if isinstance(args, basestring):
+    if isinstance(args, str):
         return (args,)
     # then it must be some kind of list, return as (a,b, ...)
     return tuple(args)

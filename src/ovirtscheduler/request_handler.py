@@ -14,12 +14,13 @@
 # limitations under the License.
 #
 
-import os
-from runner import PythonMethodRunner
-import utils
 import logging
+import os
 import uuid
-from result import Result
+
+from ovirtscheduler import utils
+from ovirtscheduler.result import Result
+from ovirtscheduler.runner import PythonMethodRunner
 
 
 class RequestHandler(object):
@@ -165,7 +166,6 @@ class RequestHandler(object):
         log_adapter.info("got request: %s" % str(filters))
         avail_f, missing_f = utils.partition(filters,
                                              lambda f: f in self._filters)
-
         # handle missing filters
         for f in missing_f:
             log_adapter.warning("Filter requested but was not found: %s" % f)
@@ -237,6 +237,10 @@ class RequestHandler(object):
                            hostIDs,
                            vmID,
                            properties_map):
+
+        def lambda_tuple(f):
+            return lambda args: f(*args)
+
         result = Result()
         request_id = str(uuid.uuid1())
         log_adapter = \
@@ -249,12 +253,13 @@ class RequestHandler(object):
 
         # Get the list of known and unknown score functions
         available_cost_f, missing_cost_f = \
-            utils.partition(cost_functions, lambda (n, w): n in self._scores)
+            utils.partition(
+                cost_functions, lambda_tuple(lambda n, w: n in self._scores))
 
         # Report the unknown functions
         for name, weight in missing_cost_f:
-                log_adapter.warning("requested but was not found: %s" % name)
-                result.pluginError(name, "plugin not found: '%s'" % name)
+            log_adapter.warning("requested but was not found: %s" % name)
+            result.pluginError(name, "plugin not found: '%s'" % name)
 
         # Prepare a generator "list" with runners and weights
         scoreRunners = [

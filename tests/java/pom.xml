@@ -13,15 +13,35 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
+			<version>4.13</version>
 			<scope>test</scope>
 		</dependency>
- 	<dependency>
- 		<groupId>org.ovirt.engine.sdk</groupId>
- 		<artifactId>ovirt-engine-sdk-java</artifactId>
- 		<version>1.0.0.19-1</version>
- 		<type>jar</type>
- 		<scope>compile</scope>
- 	</dependency>
+		<dependency>
+			<groupId>org.ovirt.engine.sdk</groupId>
+			<artifactId>ovirt-engine-sdk-java</artifactId>
+			<version>3.6.10.0</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.0</version>
+					<configuration>
+						<source>11</source>
+						<target>11</target>
+						<release>11</release>
+						<includes>
+							<include>**/*.txt</include>
+							<include>**/*.java</include>
+							<include>**/*.properties</include>
+						</includes>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>

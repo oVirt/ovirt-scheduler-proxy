@@ -33,13 +33,11 @@ BuildArch: noarch
 
 BuildRequires: systemd
 
-BuildRequires: python2-devel
-BuildRequires: python-nose
+BuildRequires: python3-devel
 BuildRequires: maven
-BuildRequires: java-1.8.0-openjdk-devel
+BuildRequires: java-11-openjdk-devel >= 11.0.4
 
-Requires: python
-
+Requires: python3
 
 %description
 The scheduler proxy runs user defined scripts to filter and fine-tune
@@ -53,14 +51,14 @@ load-balancing of their oVirt system.
 rm -rf tests/java
 
 %build
-%{__python2} setup.py \
+%{__python3} setup.py \
     build
 
 
 %install
 
 # Install the python files:
-%{__python2} setup.py \
+%{__python3} setup.py \
     install \
     -O1 \
     --skip-build \
@@ -133,8 +131,8 @@ getent passwd ovirt &>/dev/null || \
 
 %files
 # Python files (included the generated egg):
-%{python2_sitelib}/ovirtscheduler
-%{python2_sitelib}/ovirt_scheduler_proxy-*.egg-info
+%{python3_sitelib}/ovirtscheduler
+%{python3_sitelib}/ovirt_scheduler_proxy-*.egg-info
 
 %{_unitdir}/ovirt-scheduler-proxy.service
 

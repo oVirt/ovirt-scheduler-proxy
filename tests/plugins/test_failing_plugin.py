@@ -5,5 +5,4 @@ class test_failing_plugin(object):
 
     def do_score(self, hosts, vm, args):
         """This function is expected to fail and should be used only in tests."""
-
         raise Exception("Expected fail")

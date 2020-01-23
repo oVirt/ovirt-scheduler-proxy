@@ -14,17 +14,20 @@
 # limitations under the License.
 #
 
-import os
-import utils
-import sys
+from __future__ import print_function
+
 import inspect
+import os
+import sys
+
+import utils
 
 
 class loader():
-    '''
+    """
         Loads a module and checks if it has certain functions
         Will run as a process for safety, so it prints the result to stdout
-    '''
+    """
 
     def analyze(self, path, name):
         retValue = (name,)
@@ -46,9 +49,9 @@ class loader():
                                        name,
                                        utils.BALANCE)
         except Exception as ex:
-            print >> sys.stderr, ex
+            print(ex, file=sys.stderr)
 
-        print retValue
+        print(retValue)
 
     def getAttributes(self, cls, cls_name, function_name):
         description = ""

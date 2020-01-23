@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
+import os
 import unittest
 
 from runner import PythonMethodRunner
-import os
 
 
 class RunnerTest(unittest.TestCase):

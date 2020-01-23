@@ -1,4 +1,8 @@
 #!/bin/bash -xe
+
+# Set the location of the JDK that will be used for compilation:
+export JAVA_HOME="${JAVA_HOME:=/usr/lib/jvm/java-11}"
+
 [[ -d exported-artifacts ]] \
 || mkdir -p exported-artifacts
 

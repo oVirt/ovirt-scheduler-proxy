@@ -14,10 +14,11 @@
 # limitations under the License.
 #
 
-from threading import Thread
-from ast import literal_eval
-import utils
 import logging
+from ast import literal_eval
+from threading import Thread
+
+from ovirtscheduler import utils
 
 
 class PythonMethodRunner(Thread):
@@ -41,6 +42,8 @@ class PythonMethodRunner(Thread):
                 'running %s in %s' % (self._script, self._path))
             self._process = utils.createProcess(self._script, self._path)
             (result, error) = self._process.communicate()
+            if not isinstance(result, str):
+                result = result.decode()
             try:
                 self._result = literal_eval(result)
             except Exception as ex:
@@ -52,7 +55,7 @@ class PythonMethodRunner(Thread):
         except Exception as ex:
             self._error = ex
 
-        if(self._error):
+        if self._error:
             self._log_adapter.error("script %s got error %s" %
                                     (self._script, self._error))
 
@@ -69,13 +72,11 @@ class PythonMethodRunner(Thread):
         return utils.killProcess(self._process)
 
     def createScript(self, module, cls, method, args):
-        commandTemplate = \
-            "import %(module)s; %(module)s.%(class)s().%(method)s%(args)s"
-        commandString = commandTemplate % {
-            "module": module,
-            "class": cls,
-            "method": method,
-            "args": repr(utils.createFunctionArgs(args))
-        }
+        command_template = "import {m}; {m}.{c}().{method}{args}"
+        command_string = command_template\
+            .format(m=module,
+                    c=cls,
+                    method=method,
+                    args=repr(utils.createFunctionArgs(args)))
 
-        return ["python2", "-c", commandString]
+        return ["python3", "-c", command_string]

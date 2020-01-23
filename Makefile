@@ -72,19 +72,19 @@ rpm: version tarball
 test: pythontest javatest
 
 pythontest:
-	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins PYTHONPATH=src:$(PYTHONPATH) nosetests -v
+	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins PYTHONPATH=$(PYTHONPATH):src/ovirtscheduler python3 -m nose -e src
 
 javatest:
-	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins make start;  mvn -f tests/java/pom.xml clean install; make stop
+	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins PYTHONPATH=$(PYTHONPATH):src make start;  mvn -f tests/java/pom.xml clean install; make stop
 
 pep8:
-	pep8 src
+	pycodestyle-3 src
 
 start:
-	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins python2 src/ovirtscheduler/oschedproxyd.py &
+	OSCHEDPROXY_PLUGINS=$(PWD)/tests/plugins python3 src/ovirtscheduler/oschedproxyd.py &
 
 stop:
-	pkill -f "python2 src/ovirtscheduler/oschedproxyd.py"
+	pkill -f "python3 src/ovirtscheduler/oschedproxyd.py"
 
 clean:
 	find -name '*.pyc' -exec rm {} \;

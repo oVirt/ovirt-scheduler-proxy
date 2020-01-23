@@ -14,23 +14,24 @@
 # limitations under the License.
 #
 
-from API import API
-from request_handler import RequestHandler
-import SimpleXMLRPCServer
-import SocketServer
-import sys
-import os
 import logging
+import os
+import socketserver
+import sys
 from logging.handlers import RotatingFileHandler
 from time import strftime
+from xmlrpc.server import SimpleXMLRPCServer, SimpleXMLRPCRequestHandler
+
+from ovirtscheduler import API
+from ovirtscheduler.request_handler import RequestHandler
 
 
-class SimpleThreadedXMLRPCServer(SocketServer.ThreadingMixIn,
-                                 SimpleXMLRPCServer.SimpleXMLRPCServer):
+class SimpleThreadedXMLRPCServer(socketserver.ThreadingMixIn,
+                                 SimpleXMLRPCServer):
     pass
 
 
-class XMLPRPCRequestHandler(SimpleXMLRPCServer.SimpleXMLRPCRequestHandler):
+class XMLPRPCRequestHandler(SimpleXMLRPCRequestHandler):
 
     if sys.version_info[:2] == (2, 6):
         # Override BaseHTTPServer.BaseRequestHandler implementation to avoid
@@ -83,7 +84,7 @@ class ProxyServer(object):
     def run(self):
         logging.info("Publishing API")
         self._server.register_introspection_functions()
-        self._server.register_instance(API(self._handler))
+        self._server.register_instance(API.API(self._handler))
         self._server.serve_forever()
 
 
