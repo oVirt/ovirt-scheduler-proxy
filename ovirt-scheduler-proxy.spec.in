@@ -34,6 +34,7 @@ BuildArch: noarch
 BuildRequires: systemd
 
 BuildRequires: python3-devel
+BuildRequires: python3-nose
 BuildRequires: maven
 BuildRequires: java-11-openjdk-devel >= 11.0.4
 
