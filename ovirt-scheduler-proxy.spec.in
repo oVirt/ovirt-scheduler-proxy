@@ -147,6 +147,9 @@ getent passwd ovirt &>/dev/null || \
 %doc LICENSE README doc/*
 
 %changelog
+* Tue Feb 18 2020 Liran Rotenberg <lrotenbe@redhat.com> 0.1.9-1
+- Transition to python3 and java 11
+
 * Tue May 28 2019 Sandro Bonazzola <sbonazzo@redhat.com> - 0.1.8-2
 - Fix spec file for Fedora 29 compatibility
 
