@@ -15,7 +15,7 @@
 
 Name: ovirt-scheduler-proxy
 Version: {VERSION}
-Release: 2%{?dist}
+Release: 1%{?dist}
 Summary: Scheduling Proxy for Open Virtualization
 Group: Virtualization/Management
 License: ASL 2.0
