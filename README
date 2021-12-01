@@ -1,8 +1,12 @@
-oVirt Scheduler Proxy
-=====================
+# oVirt Scheduler Proxy
+
+> IMPORTANT: This project has been dropped from oVirt starting with oVirt 4.5 release.
+> See [BZ#2019841](https://bugzilla.redhat.com/show_bug.cgi?id=2028192).
+>
+> Keeping the following section only for reference.
 
 oVirt Scheduler Proxy runs user defined scripts to filter and fine-tune
 load-balancing of their oVirt system. The program opens an http port with
 simple XML-RPC
 
-see http://www.ovirt.org/Features/oVirt_External_Scheduling_Proxy
+see https://web.archive.org/web/20140818193019/https://www.ovirt.org/Features/oVirt_External_Scheduling_Proxy
